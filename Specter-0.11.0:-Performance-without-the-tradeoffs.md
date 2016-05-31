@@ -77,7 +77,7 @@ Manually precompiling a path and then using it later is a bit faster than specif
           )))))
 ```
 
-So instead of having to iterate through a sequence of navigators and execute Specter's [core protocol](TODO: link to Navigator) over and over, the navigation functions are extracted and composed to call each other directly. There is only function invocation – all protocol invocation and sequence operation has been stripped out. There's more that happens during `comp-paths`, but these are the most important optimizations.
+So instead of having to iterate through a sequence of navigators and execute Specter's [core protocol](https://github.com/nathanmarz/specter/blob/0.11.0/src/clj/com/rpl/specter/protocols.cljx#L3) over and over, the navigation functions are extracted and composed to call each other directly. There is only function invocation – all protocol invocation and sequence operation has been stripped out. There's more that happens during `comp-paths`, but these are the most important optimizations.
 
 `comp-paths` is easy to use and enables very fast code *as long as you know the complete path ahead of time*. This fact seems to preclude you from precompiling a path that cannot be known until runtime, like this previously shown example:
 
