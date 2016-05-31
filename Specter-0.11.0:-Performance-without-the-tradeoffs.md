@@ -79,7 +79,7 @@ Manually precompiling a path and then using it later is a bit faster than specif
 
 So instead of having to iterate through a sequence of navigators and execute Specter's [core protocol](TODO: link to Navigator) over and over, the navigation functions are extracted and composed to call each other directly. There is only function invocation – all protocol invocation and sequence operation has been stripped out. There's more that happens during `comp-paths`, but these are the most important optimizations.
 
-`comp-paths` is easy to use and enables very fast code /as long as you know the complete path ahead of time/. This fact seems to preclude you from precompiling a path that cannot be known until runtime, like this previously shown example:
+`comp-paths` is easy to use and enables very fast code *as long as you know the complete path ahead of time*. This fact seems to preclude you from precompiling a path that cannot be known until runtime, like this previously shown example:
 
 ```clojure
 (defn dynamic-example1 [k data]
@@ -90,7 +90,7 @@ Since the path is dependent on the runtime value of `k`, it seems impossible to 
 
 ## Late-bound parameterization
 
-The goal of late-bound paramerization is to enable navigators to be precompiled into larger paths /without their parameters/, with the parameters provided at a later time. To understand how this feature could possibly work, let's take a look at the definition of `keypath`:
+The goal of late-bound paramerization is to enable navigators to be precompiled into larger paths *without their parameters*, with the parameters provided at a later time. To understand how this feature could possibly work, let's take a look at the definition of `keypath`:
 
 ```clojure
 (defnav keypath [key]
