@@ -23,7 +23,7 @@ In each case we're comparing a Clojure built-in function against the equivalent 
 
 These examples are actually two of the easier cases for Specter to handle with high performance as the path `[:a :b :c]` is completely known at compile-time. Take a look at these more challenging examples that Specter also handles with great performance:
 
-```
+```clojure
 (defn dynamic-example1 [k data]
   (transform [ALL (keypath k)] inc data))
 
