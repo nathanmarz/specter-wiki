@@ -256,6 +256,8 @@ A simpler primitive than `invokedynamic` that Clojure could provide to help with
 
 In this example, `mycache` would be independent from any particular invocation of `foo` and would persist its value across invocations. This could be implemented at the JVM level with a static field on the class generated for `foo`. For Specter, such a feature would speed up the cached code path by eliminating the need to perform a lookup in a global `ConcurrentHashMap`. A static field access would be much faster.
 
+_Note: After this post was published, a method for creating a var per callsite to serve as the inline cache was developed, largely superseding the need for the suggested static-field feature._
+
 It's unclear if either of these are good ideas for Clojure as a whole, and that determination should be done by the Clojure developers. The point here is that Specter has hit the limits of what can be done with Clojure, but with an additional primitive exposed by Clojure, Specter could be even faster. The ultimate goal is for the inline cached code path to have the same speed as manual precompilation.
 
 ## Conclusion
