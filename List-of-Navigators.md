@@ -4,7 +4,7 @@
 
 ### ALL
 
-`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. The resulting elements will be reconstructed as a vector.
+`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
 
 ```clojure
 => (select [ALL] [0 1 2 3])
@@ -229,7 +229,7 @@ path will require parameters for all such navigators in the order in which they 
 
 ### compiled-*
 
-These functions operate in the same way as their uncompiled counterparts, but they require their path to be precompiled with comp-paths.
+These functions operate in the same way as their uncompiled counterparts, but they require their path to be precompiled with [comp-paths](#comp-paths).
 
 ### cond-path
 
@@ -311,14 +311,14 @@ ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.l
 Like [cond-path](#cond-path), but with if semantics. If no else path is supplied and cond-path is not satisfied, stops navigation.
 
 ```clojure
-=> (select [(if-path (must :deep :nested :structure) :a)] {:a 0, :deep {:nested {:structure 1}}})
+=> (select [(if-path (must :d) :a)] {:a 0, :d 1})
 (0)
-=> (select [(if-path (must :deep :nested :structure) :a :b)] {:a 0, :b 1})
+=> (select [(if-path (must :d) :a :b)] {:a 0, :b 1})
 (1)
-=> (select [(if-path (must :deep :nested :structure) :a)] {:b 0, :deep {:nested {:structure 1}}})
+=> (select [(if-path (must :d) :a)] {:b 0, :d 1})
 ()
 ;; is equivalent to
-=> (select [(if-path (must :deep :nested :structure) :a STOP)] {:b 0, :deep {:nested {:structure 1}}})
+=> (select [(if-path (must :d) :a STOP)] {:b 0, :d 1})
 ()
 ```
 
@@ -326,7 +326,7 @@ Like [cond-path](#cond-path), but with if semantics. If no else path is supplied
 
 `(keypath key)`
 
-Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist.
+Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist. If you want to stop navigation, use [must](#must).
 
 ```clojure
 => (select-one [(keypath :a)] {:a 0})
@@ -336,4 +336,41 @@ Navigates to the specified key, navigating to nil if it does not exist. Note tha
 {:b 1}
 => (select [ALL (keypath :a)] [{:a 0} {:b 1}])
 [0 nil]
+;; Does not stop navigation
+=> (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
+[0 :boo]
+```
+
+### multi-path
+
+`(multi-path & paths)`
+
+A path that branches on multiple paths. For updates,
+applies updates to the paths in order.
+
+```clojure
+=> (select [(multi-path :a :b)] {:a 0, :b 1, :c 2})
+(0 1)
+=> (select [(multi-path (filterer odd?) (filterer even?))] (range 10))
+([1 3 5 7 9] [0 2 4 6 8])
+=> (transform [(multi-path :a :b)] (fn [x] (println x) (dec x)) {:a 0, :b 1, :c 2})
+0
+1
+{:a -1, :b 0, :c 2}
+```
+
+### must
+
+`(must key)`
+
+Navigates to the key only if it exists in the map. Note that must stops navigation if the key does not exist. If you do not want to stop navigation, use [keypath](#keypath).
+
+```clojure
+=> (select-one (must :a) {:a 0})
+0
+=> (select-one (must :a) {:b 1})
+nil
+;; Only follows one key
+=> (select-one (must :a :b) {:a {:b 1}})
+{:b 1}
 ```
