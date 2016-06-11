@@ -159,3 +159,49 @@ nil
 (0 1 2 3 4)
 ```
 
+## the lower case ones
+
+### bind-params*
+
+Binds late binding params. Write this one later.
+
+### codewalker
+
+Walks code? Let's do this one later.
+
+### collect
+
+`(collect & paths)`
+
+`collect` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
+
+```clojure
+=> (select-one [(collect ALL) FIRST] (range 3))
+[[0 1 2] 0]
+=> (select [(collect ALL) ALL] (range 3))
+[[[0 1 2] 0] [[0 1 2] 1] [[0 1 2] 2]]
+=> (select [(collect ALL) (collect ALL) ALL] (range 3))
+[[[0 1 2] [0 1 2] 0] [[0 1 2] [0 1 2] 1] [[0 1 2] [0 1 2] 2]]
+;; Add the sum of the evens to the first element of the seq
+=> (transform [(collect ALL even?) FIRST] (fn [evens first] (reduce + first evens)) (range 5))
+(6 1 2 3 4)
+;; Replace the first element of the seq with the entire seq
+=> (transform [(collect ALL) FIRST] (fn [all _] all) (range 3))
+([0 1 2] 1 2)
+```
+
+### collect-one
+
+`(collect-one & paths)`
+
+`collect-one` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
+
+```clojure
+=> (select-one [(collect-one FIRST) LAST] (range 5))
+[0 4]
+=> (select [(collect-one FIRST) ALL] (range 3))
+[[0 0] [0 1] [0 2]]
+=> (transform [(collect-one :b) :a] + {:a 2 :b 3})
+{:a 5 :b 3}
+=> (transform [(collect-one :b) (collect-one :c) :a] * {:a 3 :b 5 :c 7})
+{:a 105 :b 5 :c 7}
