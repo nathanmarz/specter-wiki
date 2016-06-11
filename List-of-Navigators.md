@@ -7,12 +7,14 @@
 `ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
 
 ```clojure
-=> (select [ALL] [0 1 2 3])
+=> (select ALL [0 1 2 3])
 [0 1 2 3]
-=> (select [ALL] (list 0 1 2 3))
+=> (select ALL (list 0 1 2 3))
 [0 1 2 3]
-=> (select [ALL] {:a :b, :c :d, :e :f})
-[[:a :b] [:c :d] [:e :f]]
+=> (select ALL {:a :b, :c :d})
+[[:a :b] [:c :d]]
+=> (transform ALL identity {:a :b, :c :d})
+{:a :b, :c :d}
 ```
 
 ### ATOM
@@ -21,10 +23,10 @@
 
 ```clojure
 => (def a (atom 0))
-=> (select-one [ATOM] a)
+=> (select-one ATOM a)
 0
 => (swap! a inc)
-=> (select-one [ATOM] a)
+=> (select-one ATOM a)
 1
 ```
 
@@ -33,13 +35,13 @@
 `BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence. Returns a lazy sequence.
 
 ```clojure
-=> (setval [BEGINNING] '(0 1) (range 2 7))
+=> (setval BEGINNING '(0 1) (range 2 7))
 (0 1 2 3 4 5 6)
-=> (setval [BEGINNING] [0 1] (range 2 7))
+=> (setval BEGINNING [0 1] (range 2 7))
 (0 1 2 3 4 5 6)
-=> (setval [BEGINNING] {0 1} (range 2 7))
+=> (setval BEGINNING {0 1} (range 2 7))
 ([0 1] 2 3 4 5 6)
-=> (setval [BEGINNING] {:foo :baz} {:foo :bar})
+=> (setval BEGINNING {:foo :baz} {:foo :bar})
 ([:foo :baz] [:foo :bar])
 ```
 
@@ -48,13 +50,13 @@
 `END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. Returns a lazy sequence.
 
 ```clojure
-=> (setval [END] '(5 6) (range 5))
+=> (setval END '(5 6) (range 5))
 (0 1 2 3 4 5 6)
-=> (setval [END] [5 6] (range 5))
+=> (setval END [5 6] (range 5))
 (0 1 2 3 4 5 6)
-=> (setval [END] {5 6} (range 5))
+=> (setval END {5 6} (range 5))
 (0 1 2 3 4 [5 6])
-=> (setval [END] {:foo :baz} {:foo :bar})
+=> (setval END {:foo :baz} {:foo :bar})
 ([:foo :bar] [:foo :baz])
 ```
 
@@ -63,15 +65,15 @@
 `FIRST` navigates to the first element of a collection. If the collection is a map, returns the key-value pair `[key value]`. If the collection is empty, navigation stops.
 
 ```clojure
-=> (select-one [FIRST] (range 5))
+=> (select-one FIRST (range 5))
 0
-=> (select-one [FIRST] (sorted-map 0 :a 1 :b))
+=> (select-one FIRST (sorted-map 0 :a 1 :b))
 [0 :a]
-=> (select-one [FIRST] (sorted-set 0 1 2 3))
+=> (select-one FIRST (sorted-set 0 1 2 3))
 0
-=> (select-one [FIRST] '())
+=> (select-one FIRST '())
 nil
-=> (select [FIRST] '())
+=> (select FIRST '())
 nil
 ```
 
@@ -80,15 +82,15 @@ nil
 `LAST` navigates to the last element of a collection. If the collection is a map, returns the key-value pair `[key value]`. If the collection is empty, navigation stops.
 
 ```clojure
-=> (select-one [LAST] (range 5))
+=> (select-one LAST (range 5))
 4
-=> (select-one [LAST] (sorted-map 0 :a 1 :b))
+=> (select-one LAST (sorted-map 0 :a 1 :b))
 [1 :b]
-=> (select-one [LAST] (sorted-set 0 1 2 3))
+=> (select-one LAST (sorted-set 0 1 2 3))
 3
-=> (select-one [LAST] '())
+=> (select-one LAST '())
 nil
-=> (select [LAST] '())
+=> (select LAST '())
 nil
 ```
 
@@ -97,7 +99,7 @@ nil
 `MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`. Note that `MAP-VALS` returns a lazy seq.
 
 ```clojure
-=> (select [MAP-VALS] {:a :b, :c :d})
+=> (select MAP-VALS {:a :b, :c :d})
 (:b :d)
 => (select [MAP-VALS MAP-VALS] {:a {:b :c}, :d {:e :f}})
 (:c :f)
@@ -108,9 +110,9 @@ nil
 `NIL->LIST` navigates to the empty list `'()` if the value is nil. Otherwise it stays at the current value.
 
 ```clojure
-=> (select-one [NIL->LIST] nil)
+=> (select-one NIL->LIST nil)
 ()
-=> (select-one [NIL->LIST] :foo)
+=> (select-one NIL->LIST :foo)
 :foo
 ```
 
@@ -119,9 +121,9 @@ nil
 `NIL->SET` navigates to the empty set `#{}` if the value is nil. Otherwise it stays at the current value.
 
 ```clojure
-=> (select-one [NIL->LIST] nil)
+=> (select-one NIL->LIST nil)
 #{}
-=> (select-one [NIL->LIST] :foo)
+=> (select-one NIL->LIST :foo)
 :foo
 ```
 
@@ -130,9 +132,9 @@ nil
 `NIL->VECTOR` navigates to the empty vector `[]` if the value is nil. Otherwise it stays at the current value.
 
 ```clojure
-=> (select-one [NIL->LIST] nil)
+=> (select-one NIL->LIST nil)
 []
-=> (select-one [NIL->LIST] :foo)
+=> (select-one NIL->LIST :foo)
 :foo
 ```
 
@@ -141,7 +143,7 @@ nil
 `STAY` stays in place. It is the no-op navigator.
 
 ```clojure
-=> (select-one [STAY] :foo)
+=> (select-one STAY :foo)
 :foo
 ```
 
@@ -150,7 +152,7 @@ nil
 `STOP` stops navigation. For selection, returns nil. For transformation, returns the structure unchanged.
 
 ```clojure
-=> (select-one [STOP] :foo)
+=> (select-one STOP :foo)
 nil
 => (select [ALL STOP] (range 5))
 []
@@ -246,10 +248,10 @@ will be parameterized in the order of which the parameterized navigators
 were declared.
 
 ```clojure
-=> (select [ALL (cond-path (must :a) :a (must :b) :b)] [{:a 0} {:b 1} {:c 2}])
-[0 1]
-=> (select [cond-path (must :a) :a] {:b 1})
-nil
+=> (select [ALL (cond-path (must :a) :a (must :b) :c)] [{:a 0} {:b 1} {:c 2}])
+[0 2]
+=> (select [(cond-path (must :a) :b)] {:b 1})
+()
 ```
 
 ### continue-then-stay
@@ -260,7 +262,7 @@ Navigates to the provided path and then to the current element. This can be used
 to implement post-order traversal.
 
 ```clojure
-=> (select [(continue-then-stay MAP-VALS)] {:a 0 :b 1 :c 2})
+=> (select (continue-then-stay MAP-VALS) {:a 0 :b 1 :c 2})
 (0 1 2 {:a 0, :b 1, :c 2})
 ```
 
@@ -271,9 +273,9 @@ to implement post-order traversal.
 Navigates to every continuous subsequence of elements matching `pred`.
 
 ```clojure
-=> (select [(continuous-subseqs #(< % 10))] [5 6 11 11 3 12 2 5])
+=> (select (continuous-subseqs #(< % 10)) [5 6 11 11 3 12 2 5])
 ([5 6] [3] [2 5])
-=> (select [(continuous-subseqs #(< % 10))] [12 13])
+=> (select (continuous-subseqs #(< % 10)) [12 13])
 ()
 ```
 
@@ -291,9 +293,9 @@ were declared. Note that filterer is a function which returns a navigator. It is
 
 ```clojure
 ;; Note that clojure functions have been extended to implement the navigator protocol
-=> (select-one [(filterer even?)] (range 10))
+=> (select-one (filterer even?) (range 10))
 [0 2 4 6 8]
-=> (select-one [(filterer identity)] ['() [] #{} {} "" true false nil])
+=> (select-one (filterer identity) ['() [] #{} {} "" true false nil])
 [() [] #{} {} "" true]
 => (let [pred-path (comp-paths (filterer pred))]
      (select-one (pred-path even?) (range 10)))
@@ -311,14 +313,14 @@ ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.l
 Like [cond-path](#cond-path), but with if semantics. If no else path is supplied and cond-path is not satisfied, stops navigation.
 
 ```clojure
-=> (select [(if-path (must :d) :a)] {:a 0, :d 1})
+=> (select (if-path (must :d) :a) {:a 0, :d 1})
 (0)
-=> (select [(if-path (must :d) :a :b)] {:a 0, :b 1})
+=> (select (if-path (must :d) :a :b) {:a 0, :b 1})
 (1)
-=> (select [(if-path (must :d) :a)] {:b 0, :d 1})
+=> (select (if-path (must :d) :a) {:b 0, :d 1})
 ()
 ;; is equivalent to
-=> (select [(if-path (must :d) :a STOP)] {:b 0, :d 1})
+=> (select (if-path (must :d) :a STOP) {:b 0, :d 1})
 ()
 ```
 
@@ -329,12 +331,12 @@ Like [cond-path](#cond-path), but with if semantics. If no else path is supplied
 Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist. If you want to stop navigation, use [must](#must).
 
 ```clojure
-=> (select-one [(keypath :a)] {:a 0})
+=> (select-one (keypath :a) {:a 0})
 0
 ;; Only one key allowed
-=> (select-one [(keypath :a :b)] {:a {:b 1}})
+=> (select-one (keypath :a :b) {:a {:b 1}})
 {:b 1}
-=> (select [ALL (keypath :a)] [{:a 0} {:b 1}])
+=> (select [ALL (keypath :a) [{:a 0} {:b 1}])
 [0 nil]
 ;; Does not stop navigation
 => (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
@@ -349,11 +351,11 @@ A path that branches on multiple paths. For updates,
 applies updates to the paths in order.
 
 ```clojure
-=> (select [(multi-path :a :b)] {:a 0, :b 1, :c 2})
+=> (select (multi-path :a :b) {:a 0, :b 1, :c 2})
 (0 1)
-=> (select [(multi-path (filterer odd?) (filterer even?))] (range 10))
+=> (select (multi-path (filterer odd?) (filterer even?)) (range 10))
 ([1 3 5 7 9] [0 2 4 6 8])
-=> (transform [(multi-path :a :b)] (fn [x] (println x) (dec x)) {:a 0, :b 1, :c 2})
+=> (transform (multi-path :a :b) (fn [x] (println x) (dec x)) {:a 0, :b 1, :c 2})
 0
 1
 {:a -1, :b 0, :c 2}
