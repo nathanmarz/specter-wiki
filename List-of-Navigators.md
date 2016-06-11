@@ -4,7 +4,7 @@
 
 ### ALL
 
-`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. The resulting elements will be reconstructed as a vector. (Or maybe this is because of `select`?)
+`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. The resulting elements will be reconstructed as a vector.
 
 ```clojure
 => (select [ALL] [0 1 2 3])
