@@ -99,7 +99,7 @@ nil
 ```clojure
 => (select [MAP-VALS] {:a :b, :c :d})
 (:b :d)
-=> (select [MAP-VALS MAP-VALS] {:a {:b :c} :d {:e :f}})
+=> (select [MAP-VALS MAP-VALS] {:a {:b :c}, :d {:e :f}})
 (:c :f)
 ```
 
@@ -202,10 +202,10 @@ Walks code? Let's do this one later.
 [0 4]
 => (select [(collect-one FIRST) ALL] (range 3))
 [[0 0] [0 1] [0 2]]
-=> (transform [(collect-one :b) :a] + {:a 2 :b 3})
-{:a 5 :b 3}
-=> (transform [(collect-one :b) (collect-one :c) :a] * {:a 3 :b 5 :c 7})
-{:a 105 :b 5 :c 7}
+=> (transform [(collect-one :b) :a] + {:a 2, :b 3})
+{:a 5, :b 3}
+=> (transform [(collect-one :b) (collect-one :c) :a] * {:a 3, :b 5, :c 7})
+{:a 105,, :b 5 :c 7}
 ```
 
 ### comp-paths
@@ -213,19 +213,127 @@ Walks code? Let's do this one later.
 `(comp-paths & path)`
 
 Returns a compiled version of the given path for use with compiled-{select/transform/setval/etc.} functions. This can compile navigators (defined with `defnav`) without their parameters, and the resulting compiled
-path will require parameters for all such navigators in the order in which they were declared. Provides a speed improvement of about 2-15% over the inline caching introduced with version 0.11.0.
-
-Note that `
+path will require parameters for all such navigators in the order in which they were declared. Provides a speed improvement of about 2-15% over the inline caching introduced with version 0.11.2.
 
 ```clojure
 => (let [my-path (comp-paths :a :b :c)]
      (compiled-select-one my-path {:a {:b {:c 0}}}))
 0
 => (let [param-path (comp-paths :a :b keypath))]
-     (compiled-transform (param-path :c) inc {:a {:b {:c 0 :d 1}}})
-{:a {:b {:c 1 :d 1}}}
+     (compiled-transform (param-path :c) inc {:a {:b {:c 0, :d 1}}})
+{:a {:b {:c 1, :d 1}}}
+=> (let [range-path (comp-paths srange)]
+     (compiled-select-one (range-path 1 4) (range 4)))
+[1 2 3]
 ```
 
 ### compiled-*
 
-These functions operate in the same way as their uncompiled brethren, but they require their path to be precompiled.
+These functions operate in the same way as their uncompiled counterparts, but they require their path to be precompiled with comp-paths.
+
+### cond-path
+
+`(cond-path & conds)`
+
+Takes as arguments alternating `cond-path1 path1 cond-path2 path2...`
+Tests if selecting with cond-path on the current structure returns anything.
+If so, it navigates to the corresponding path.
+Otherwise, it tries the next cond-path. If nothing matches, then the structure
+is not selected.
+
+The input paths may be parameterized, in which case the result of cond-path
+will be parameterized in the order of which the parameterized navigators
+were declared.
+
+```clojure
+=> (select [ALL (cond-path (must :a) :a (must :b) :b)] [{:a 0} {:b 1} {:c 2}])
+[0 1]
+=> (select [cond-path (must :a) :a] {:b 1})
+nil
+```
+
+### continue-then-stay
+
+`(continue-then-stay & path)`
+
+Navigates to the provided path and then to the current element. This can be used
+to implement post-order traversal.
+
+```clojure
+=> (select [(continue-then-stay MAP-VALS)] {:a 0 :b 1 :c 2})
+(0 1 2 {:a 0, :b 1, :c 2})
+```
+
+### continuous-subseqs
+
+`(continuous-subseqs pred)`
+
+Navigates to every continuous subsequence of elements matching `pred`.
+
+```clojure
+=> (select [(continuous-subseqs #(< % 10))] [5 6 11 11 3 12 2 5])
+([5 6] [3] [2 5])
+=> (select [(continuous-subseqs #(< % 10))] [12 13])
+()
+```
+
+### filterer
+
+`(filterer & path)`
+
+Navigates to a view of the current sequence that only contains elements that
+match the given path. An element matches the selector path if calling select
+on that element with the path yields anything other than an empty sequence.
+
+The input path may be parameterized, in which case the result of filterer
+will be parameterized in the order of which the parameterized selectors
+were declared. Note that filterer is a function which returns a navigator. It is the arguments to filterer that can be parametrized, not filterer.
+
+```clojure
+;; Note that clojure functions have been extended to implement the navigator protocol
+=> (select-one [(filterer even?)] (range 10))
+[0 2 4 6 8]
+=> (select-one [(filterer identity)] ['() [] #{} {} "" true false nil])
+[() [] #{} {} "" true]
+=> (let [pred-path (comp-paths (filterer pred))]
+     (select-one (pred-path even?) (range 10)))
+[0 2 4 6 8]
+=> (let [pred-path (comp-paths filterer)]
+     (select-one (pred-path even?) (range 10)))
+ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.lang.IFn
+```
+
+### if-path
+
+`(if-path cond-path then-path)`
+`(if-path cond-path then-path else-path)`
+
+Like [cond-path](#cond-path), but with if semantics. If no else path is supplied and cond-path is not satisfied, stops navigation.
+
+```clojure
+=> (select [(if-path (must :deep :nested :structure) :a)] {:a 0, :deep {:nested {:structure 1}}})
+(0)
+=> (select [(if-path (must :deep :nested :structure) :a :b)] {:a 0, :b 1})
+(1)
+=> (select [(if-path (must :deep :nested :structure) :a)] {:b 0, :deep {:nested {:structure 1}}})
+()
+;; is equivalent to
+=> (select [(if-path (must :deep :nested :structure) :a STOP)] {:b 0, :deep {:nested {:structure 1}}})
+()
+```
+
+### keypath
+
+`(keypath key)`
+
+Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist.
+
+```clojure
+=> (select-one [(keypath :a)] {:a 0})
+0
+;; Only one key allowed
+=> (select-one [(keypath :a :b)] {:a {:b 1}})
+{:b 1}
+=> (select [ALL (keypath :a)] [{:a 0} {:b 1}])
+[0 nil]
+```
