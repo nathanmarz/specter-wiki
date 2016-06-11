@@ -179,7 +179,7 @@ nil
 
 Collects the current structure.
 
-See also [collect](#collect) and [collect-one](#collect-one).
+See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 
 ```clojure
 => (select [VAL ALL] (range 3))
@@ -216,6 +216,8 @@ See also [walker](#walker).
 
 `collect` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
 
+See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
+
 ```clojure
 => (select-one [(collect ALL) FIRST] (range 3))
 [[0 1 2] 0]
@@ -238,6 +240,8 @@ See also [walker](#walker).
 `(collect-one & paths)`
 
 `collect-one` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
+
+See also [VAL](#val), [collect](#collect), and [putval](#putval)
 
 ```clojure
 => (select-one [(collect-one FIRST) LAST] (range 5))
@@ -286,6 +290,8 @@ is not selected.
 The input paths may be parameterized, in which case the result of cond-path
 will be parameterized in the order of which the parameterized navigators
 were declared.
+
+See also [if-path](#if-path)
 
 ```clojure
 => (select [ALL (cond-path (must :a) :a (must :b) :c)] [{:a 0} {:b 1} {:c 2}])
@@ -354,6 +360,8 @@ ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.l
 
 Like [cond-path](#cond-path), but with if semantics. If no else path is supplied and cond-path is not satisfied, stops navigation.
 
+See also [if-path](#if-path)
+
 ```clojure
 => (select (if-path (must :d) :a) {:a 0, :d 1})
 (0)
@@ -371,6 +379,8 @@ Like [cond-path](#cond-path), but with if semantics. If no else path is supplied
 `(keypath key)`
 
 Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist. If you want to stop navigation, use [must](#must).
+
+See also [must](#must)
 
 ```clojure
 => (select-one (keypath :a) {:a 0})
@@ -408,6 +418,8 @@ applies updates to the paths in order.
 `(must key)`
 
 Navigates to the key only if it exists in the map. Note that must stops navigation if the key does not exist. If you do not want to stop navigation, use [keypath](#keypath).
+
+See also [keypath](#keypath) and [pred](#pred).
 
 ```clojure
 => (select-one (must :a) {:a 0})
@@ -466,6 +478,8 @@ it to get the final value at this point.
 Keeps the element only if it matches the supplied predicate. This is the
 late-bound parameterized version of using a function directly in a path.
 
+See also [must](#must).
+
 ```clojure
 => (select [ALL (pred even?)] (range 10))
 [0 2 4 6 8]
@@ -481,6 +495,8 @@ late-bound parameterized version of using a function directly in a path.
 Adds an external value to the collected vals. Useful when additional arguments
 are required to the transform function that would otherwise require partial
 application or a wrapper function.
+
+See also [VAL](#val), [collect](#collect), and [collect-one](#collect-one)
 
 ```clojure
 ;; incrementing val at path [:a :b] by 3
@@ -665,8 +681,6 @@ See also [view](#view)
 Navigates to result of running `afn` on the currently navigated value.
 
 See also [transformed](#transformed).
-
-Is this just shorthand for `(transformed STAY afn)`?
 
 ```clojure
 => (select-one [FIRST (view inc)] (range 5))
