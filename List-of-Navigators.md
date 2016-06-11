@@ -2,6 +2,8 @@
 
 ## The All Caps Ones
 
+[to-atom](#ATOM)
+
 ### ALL
 
 `ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. The resulting elements will be reconstructed as a vector.
