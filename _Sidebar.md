@@ -1,2 +1,0 @@
-[ALL](#all)
-[ATOM](#atom)
