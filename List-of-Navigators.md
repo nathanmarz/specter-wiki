@@ -30,32 +30,31 @@
 
 ### BEGINNING
 
-`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `transform` to add values onto the beginning of a sequence. Returns a lazy sequence.
+`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence. Returns a lazy sequence.
 
 ```clojure
-=> (transform [BEGINNING] (fn [_] '(0 1)) (range 2 7))
+=> (setval [BEGINNING] '(0 1) (range 2 7))
 (0 1 2 3 4 5 6)
-=> (transform [BEGINNING] (fn [_] [0 1]) (range 2 7))
+=> (setval [BEGINNING] [0 1] (range 2 7))
 (0 1 2 3 4 5 6)
-=> (transform [BEGINNING] (fn [_] {0 1}) (range 2 7))
+=> (setval [BEGINNING] {0 1} (range 2 7))
 ([0 1] 2 3 4 5 6)
-=> (transform [BEGINNING] (fn [_] {:foo :baz}) {:foo :bar})
+=> (setval [BEGINNING] {:foo :baz} {:foo :bar})
 ([:foo :baz] [:foo :bar])
 ```
 
-
 ### END
 
-`END` navigates to the empty subsequence after the end of a collection. Useful with `transform` to add values onto the end of a sequence. Returns a lazy sequence.
+`END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. Returns a lazy sequence.
 
 ```clojure
-=> (transform [END] (fn [_] '(5 6)) (range 5))
+=> (setval [END] '(5 6) (range 5))
 (0 1 2 3 4 5 6)
-=> (transform [END] (fn [_] [5 6]) (range 5))
+=> (setval [END] [5 6] (range 5))
 (0 1 2 3 4 5 6)
-=> (transform [END] (fn [_] {5 6}) (range 5))
+=> (setval [END] {5 6} (range 5))
 (0 1 2 3 4 [5 6])
-=> (transform [END] (fn [_] {:foo :baz}) {:foo :bar})
+=> (setval [END] {:foo :baz} {:foo :bar})
 ([:foo :bar] [:foo :baz])
 ```
 
