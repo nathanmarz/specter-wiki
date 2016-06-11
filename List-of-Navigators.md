@@ -183,7 +183,9 @@ Walks code? Let's do this one later.
 => (select [(collect ALL) (collect ALL) ALL] (range 3))
 [[[0 1 2] [0 1 2] 0] [[0 1 2] [0 1 2] 1] [[0 1 2] [0 1 2] 2]]
 ;; Add the sum of the evens to the first element of the seq
-=> (transform [(collect ALL even?) FIRST] (fn [evens first] (reduce + first evens)) (range 5))
+=> (transform [(collect ALL even?) FIRST] 
+              (fn [evens first] (reduce + first evens))
+              (range 5))
 (6 1 2 3 4)
 ;; Replace the first element of the seq with the entire seq
 => (transform [(collect ALL) FIRST] (fn [all _] all) (range 3))
