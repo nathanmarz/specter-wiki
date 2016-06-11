@@ -10,8 +10,10 @@
 [compiled-transform](#compiled-*) [cond-path](#cond-path) [continue-then-stay](#continue-then-stay)
 [continuous-subseqs](#continuous-subseqs) [filterer](#filterer) [if-path](#if-path)
 [keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil->val)
-[parser](#parser)
-[not-selected?](#not-selected?) [selected?](#selected?) 
+[parser](#parser) [pred](#pred) [putval](#putval) [not-selected?](#not-selected?) 
+[selected?](#selected?) [srange](#srange) [srange-dynamic](#srange-dynamic)
+[stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
+[transformed](#transformed) [view](#view) [walker](#walker)
 
 ## The All Caps Ones
 
@@ -455,6 +457,35 @@ it to get the final value at this point.
               (fn [[name domain]] [(str name "+spam") domain])
               ["test@example.com" "test@gmail.com"])
 ["test@example.com" "test+spam@gmail.com"]
+```
+
+### pred
+
+`(pred apred)`
+
+Keeps the element only if it matches the supplied predicate. This is the
+late-bound parameterized version of using a function directly in a path.
+
+```clojure
+=> (select [ALL (pred even?)] (range 10))
+[0 2 4 6 8]
+=> (let [p-path (comp-paths ALL pred)]
+     (select (p-path even?) (range 10)))
+[0 2 4 6 8]
+```
+
+### putval
+
+`(putval val)`
+
+Adds an external value to the collected vals. Useful when additional arguments
+are required to the transform function that would otherwise require partial
+application or a wrapper function.
+
+```clojure
+;; incrementing val at path [:a :b] by 3
+=> (transform [:a :b (putval 3)] + {:a {:b 0}})
+{:a {:b 3}}
 ```
 
 ### not-selected?
