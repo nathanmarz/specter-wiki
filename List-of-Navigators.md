@@ -2,7 +2,7 @@
 
 ## The All Caps Ones
 
-[to-atom](#ATOM)
+[to-atom](#atom)
 
 ### ALL
 
