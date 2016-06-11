@@ -1,4 +1,17 @@
-# List of Navigators with Example(s)
+# List of Navigators with Examples
+
+[ALL](#ALL) [ATOM](#ATOM) [BEGINNING](#BEGINNING) [END](#END) [FIRST](#FIRST) [LAST](#LAST)
+[MAP-VALS](#MAP-VALS) [NIL->LIST](#NIL->LIST) [NIL->SET](#NIL->SET) [NIL->VECTOR](#NIL->VECTOR)
+[STAY](#STAY) [STOP](#STOP) [VAL](#VAL)
+
+[codewalker](#codewalker) [collect](#collect) [collect-one](collect-one) [comp-paths](#comp-paths)
+[compiled-replace-in](#compiled-*) [compiled-select](#compiled-*) [compiled-select-first](#compiled-*)
+[compiled-select-one](#compiled-*) [compiled-select-one!](#compiled-*) [compiled-setval](#compiled-*)
+[compiled-transform](#compiled-*) [cond-path](#cond-path) [continue-then-stay](#continue-then-stay)
+[continuous-subseqs](#continuous-subseqs) [filterer](#filterer) [if-path](#if-path)
+[keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil->val)
+[parser](#parser)
+[not-selected?](#not-selected?) [selected?](#selected?) 
 
 ## The All Caps Ones
 
@@ -160,15 +173,40 @@ nil
 (0 1 2 3 4)
 ```
 
+### VAL
+
+Collects the current structure.
+
+See also [collect](#collect) and [collect-one](#collect-one).
+
+```clojure
+=> (select [VAL ALL] (range 3))
+[[(0 1 2) 0] [(0 1 2) 1] [(0 1 2) 2]]
+;; Collected values are passed as initial arguments to the update fn.
+=> (transform [VAL ALL] (fn [coll x] (+ x (count coll))) (range 5))
+(5 6 7 8 9)
+```
+
 ## the lower case ones
-
-### bind-params*
-
-Binds late binding params. Write this one later.
 
 ### codewalker
 
-Walks code? Let's do this one later.
+`(codewalker afn)`
+
+Using clojure.walk, `codewalker` executes a depth-first search for nodes where `afn`
+returns a truthy value. When `afn` returns a truthy value, `codewalker` stops
+searching that branch of the tree and continues its search of the rest of the
+data structure. `codewalker` preserves the metadata of any forms traversed.
+
+See also [walker](#walker).
+
+```clojure
+=> (select (codewalker #(if (map? %) (even? (get % :a)) false)) 
+           (list (with-meta {:a 2} {:foo :bar}) (with-meta {:a 1} {:foo :baz})))
+({:a 2})
+=> (map meta *1)
+({:foo :bar})
+```
 
 ### collect
 
@@ -260,6 +298,8 @@ were declared.
 
 Navigates to the provided path and then to the current element. This can be used
 to implement post-order traversal.
+
+See also [stay-then-continue](#stay-then-continue).
 
 ```clojure
 => (select (continue-then-stay MAP-VALS) {:a 0 :b 1 :c 2})
@@ -375,4 +415,254 @@ nil
 ;; Only follows one key
 => (select-one (must :a :b) {:a {:b 1}})
 {:b 1}
+```
+
+### nil->val
+
+`(nil->val v)`
+
+Navigates to the provided val if the structure is nil. Otherwise it stays
+navigated at the structure.
+
+```clojure
+=> (select-one (nil->val :a) nil)
+:a
+=> (select-one (nil->val :a) :b)
+:b
+```
+
+### params-reset
+
+`(params-reset params-path)`
+
+Not sure. Figure this one out later.
+
+### parser
+
+`(parser parse-fn unparse-fn)`
+
+Navigate to the result of running `parse-fn` on the value. For 
+transforms, the transformed value then has `unparse-fn` run on 
+it to get the final value at this point.
+
+```clojure
+=> (defn parse [address] (string/split address #"@"))
+=> (defn unparse [address] (string/join "@" address))
+=> (select [ALL (parser parse unparse) #(= "gmail.com" (second %))] 
+           ["test@example.com" "test@gmail.com"])
+[["test" "gmail.com"]]
+=> (transform [ALL (parser parse unparse) #(= "gmail.com" (second %))]
+              (fn [[name domain]] [(str name "+spam") domain])
+              ["test@example.com" "test@gmail.com"])
+["test@example.com" "test+spam@gmail.com"]
+```
+
+### not-selected?
+
+`(not-selected? & path)`
+
+Stops navigation if the path navigator finds a result. Otherwise continues with the current structure.
+
+The input path may be parameterized, in which case the result of selected?
+will be parameterized in the order of which the parameterized navigators
+were declared.
+
+See also [selected?](#selected?). 
+
+```clojure
+=> (select [ALL (not-selected? even?)] (range 10))
+[1 3 5 7 9]
+=> (select [ALL (not-selected? [(must :a) even?])] [{:a 0} {:a 1} {:a 2} {:a 3}])
+[{:a 1} {:a 3}]
+;; Path returns [0 2], so navigation stops
+=> (select-one (not-selected? [ALL (must :a) even?]) [{:a 0} {:a 1} {:a 2} {:a 3}])
+nil
+```
+
+### selected?
+
+`(selected? & path)`
+
+Stops navigation if the path navigator fails to find a result. Otherwise continues with the current structure.
+
+The input path may be parameterized, in which case the result of selected?
+will be parameterized in the order of which the parameterized navigators
+were declared.
+
+See also [not-selected?](#not-selected?). 
+
+```clojure
+=> (select [ALL (selected? even?)] (range 10))
+[0 2 4 6 8]
+=> (select [ALL (selected? [(must :a) even?])] [{:a 0} {:a 1} {:a 2} {:a 3}])
+[{:a 0} {:a 2}]
+;; Path returns [0 2], so selected? returns the entire structure
+=> (select-one (selected? [ALL (must :a) even?]) [{:a 0} {:a 1} {:a 2} {:a 3}])
+[{:a 0} {:a 1} {:a 2} {:a 3}]
+nil
+```
+
+### srange
+
+`(srange start end)`
+
+Navigates to the subsequence bound by the indexes start (inclusive)
+and end (exclusive).
+
+See also [srange-dynamic](#srange-dynamic).
+
+```clojure
+=> (select-one (srange 2 4) (range 5))
+[2 3]
+=> (select-one (srange 0 10) (range 5))
+IndexOutOfBoundsException
+```
+
+### srange-dynamic
+
+`(srange-dynamic start-fn end-fn)`
+
+Uses start-fn and end-fn to determine the bounds of the subsequence
+to select when navigating. Each function takes in the structure as input.
+
+See also [srange](#srange).
+
+```clojure
+=> (select-one (srange-dynamic #(.indexOf % 2) #(.indexOf % 4)) (range 5))
+[2 3]
+=> (select-one (srange-dynamic (fn [_] 0) #(quot (count %) 2)) (range 10))
+[0 1 2 3 4]
+```
+
+### stay-then-continue
+
+`(stay-then-continue)`
+
+Navigates to the current element and then navigates via the provided path.
+This can be used to implement pre-order traversal.
+
+See also [continue-then-stay](#continue-then-stay).
+
+```clojure
+=> (select (stay-then-continue MAP-VALS) {:a 0 :b 1 :c 2})
+({:a 0, :b 1, :c 2} 0 1 2)
+```
+
+### submap
+
+`(submap m-keys)`
+
+Navigates to the specified submap (using select-keys).
+In a transform, that submap in the original map is changed to the new
+value of the submap.
+
+```clojure
+=> (select-one (submap [:a :b]) {:a 0, :b 1, :c 2})
+{:a 0, :b 1}
+=> (select-one (submap [:c]) {:a 0})
+{}
+;; (submap [:a :c]) returns {:a 0} with no :c
+=> (transform [(submap [:a :c]) MAP-VALS]
+              inc
+              {:a 0, :b 1})
+{:b 1, :a 1}
+;; We replace the empty submap with {:c 2} and merge with the original
+;; structure
+=> (transform (submap []) #(assoc % :c 2) {:a 0, :b 1})
+{:a 0, :b 1, :c 2}
+```
+
+### subselect
+
+`(subselect & path)`
+
+Navigates to a sequence that contains the results of (select ...),
+but is a view to the original structure that can be transformed.
+
+Requires that the input navigators will walk the structure's
+children in the same order when executed on "select" and then
+"transform".
+
+I don't know what this one is good for yet. The below example could easily be written with just transformed.
+
+```clojure
+=> (select-one [(subselect ALL (transformed STAY inc)) FIRST] (range 5))
+1
+```
+
+### subset
+
+`(subset aset)`
+
+Navigates to the specified subset (by taking an intersection).
+In a transform, that subset in the original set is changed to the
+new value of the subset.
+
+```clojure
+=> (select-one (subset #{:a :b}) #{:b :c})
+#{:b}
+;; Replaces the #{:a} subset with #{:a :c} and unions back into
+;; the original structure
+=> (setval (subset #{:a}) #{:a :c} #{:a :b})
+#{:c :b :a}
+```
+
+### transformed
+
+`(transformed path update-fn)`
+
+Navigates to a view of the current value by transforming it with the
+specified path and update-fn.
+
+The input path may be parameterized, in which case the result of transformed
+will be parameterized in the order of which the parameterized navigators
+were declared.
+
+See also [view](#view)
+
+```clojure
+=> (select-one (transformed [ALL odd?] #(* % 2)) (range 10))
+(0 2 2 6 4 10 6 14 8 18)
+=> (transform [(transformed [ALL odd?] #(* % 2)) ALL] #(/ % 2) (range 10))
+(0 1 1 3 2 5 3 7 4 9)
+```
+
+### view
+
+`(view afn)`
+
+Navigates to result of running `afn` on the currently navigated value.
+
+See also [transformed](#transformed).
+
+Is this just shorthand for `(transformed STAY afn)`?
+
+```clojure
+=> (select-one [FIRST (view inc)] (range 5))
+1
+```
+
+### walker
+
+`(walker afn)`
+
+Using clojure.walk, `walker` executes a depth-first search for nodes where `afn`
+returns a truthy value. When `afn` returns a truthy value, `walker` stops
+searching that branch of the tree and continues its search of the rest of the
+data structure.
+
+See also [codewalker](#codewalker)
+
+```clojure
+=> (select (walker #(if (number? %) (even? %) false)) '(1 (3 4) 2 (6)))
+(4 2 6)
+;; Note that (3 4) and (6 7) are not returned because the search halted at
+;; (2 (3 4) (5 (6 7))).
+=> (select (walker #(if (counted? %) (even? (count %)) false)) 
+     '(1 (2 (3 4) 5 (6 7)) (8 9)))
+((2 (3 4) 5 (6 7)) (8 9))
+=> (transform (walker #(if (counted? %) (even? (count %)) false)) 
+              (fn [_] :double)
+              '(1 (2 (3 4) 5 (6 7)) (8 9)))
+(1 :double :double)
 ```
