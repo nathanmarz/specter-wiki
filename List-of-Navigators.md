@@ -206,3 +206,26 @@ Walks code? Let's do this one later.
 {:a 5 :b 3}
 => (transform [(collect-one :b) (collect-one :c) :a] * {:a 3 :b 5 :c 7})
 {:a 105 :b 5 :c 7}
+```
+
+### comp-paths
+
+`(comp-paths & path)`
+
+Returns a compiled version of the given path for use with compiled-{select/transform/setval/etc.} functions. This can compile navigators (defined with `defnav`) without their parameters, and the resulting compiled
+path will require parameters for all such navigators in the order in which they were declared. Provides a speed improvement of about 2-15% over the inline caching introduced with version 0.11.0.
+
+Note that `
+
+```clojure
+=> (let [my-path (comp-paths :a :b :c)]
+     (compiled-select-one my-path {:a {:b {:c 0}}}))
+0
+=> (let [param-path (comp-paths :a :b keypath))]
+     (compiled-transform (param-path :c) inc {:a {:b {:c 0 :d 1}}})
+{:a {:b {:c 1 :d 1}}}
+```
+
+### compiled-*
+
+These functions operate in the same way as their uncompiled brethren, but they require their path to be precompiled.
