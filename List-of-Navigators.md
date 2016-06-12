@@ -1,5 +1,7 @@
 # List of Navigators with Examples
 
+**Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
+
 [ALL](#ALL) [ATOM](#ATOM) [BEGINNING](#BEGINNING) [END](#END) [FIRST](#FIRST) [LAST](#LAST)
 [MAP-VALS](#MAP-VALS) [NIL->LIST](#NIL->LIST) [NIL->SET](#NIL->SET) [NIL->VECTOR](#NIL->VECTOR)
 [STAY](#STAY) [STOP](#STOP) [VAL](#VAL)
