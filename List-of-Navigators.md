@@ -194,7 +194,7 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 (5 6 7 8 9)
 ```
 
-## Parameterized Navigators
+## Parameterized Navigators (and Functions)
 
 ### codewalker
 
