@@ -5,6 +5,7 @@
 ### declarepath
 
 `(declarepath name)`
+
 `(declarepath name params)`
 
 Declares a new symbol available to be defined as a path. If the path will require parameters, these must be specified here.
@@ -19,6 +20,8 @@ See also [providepath](#providepath)
 => (transform SECOND dec (range 5))
 (0 0 2 3 4)
 ```
+
+## Collector Macros
 
 ### defcollector
 
@@ -38,9 +41,12 @@ An informative example is the actual implementation of `putval`, which follows.
 (3 4 5 6 7)
 ```
 
+## Navigator Macros
+
 ### defnav
 
 `(defnav name params select-impl transform-impl)`
+
 `(defnav name params transform-impl select-impl)`
 
 Canonically the first is used.
@@ -78,6 +84,7 @@ See also [nav](#nav)
 ### nav
 
 `(nav params select-impl transform-impl)`
+
 `(nav params transform-impl select-impl)`
 
 Returns an "anonymous navigator." See [defnav](#defnav).
