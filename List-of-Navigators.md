@@ -473,8 +473,6 @@ Resets the index in the parameter list to 0. Useful for defining recursive navig
      (stay-then-continue must (params-reset MyWalker)))
 => (select (MyWalker :a) {:a {:a {:b 2}}})
 ({:a {:a {:b 2}}} {:a {:b 2}} {:b 2})
-=> (select (MyWalker :a) {:a {:b {:a 0}}})
-({:a {:b {:a 0}}} {:b {:a 0}})
 ```
 
 ### parser
