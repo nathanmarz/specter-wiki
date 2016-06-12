@@ -2,9 +2,9 @@
 
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
 
-[ALL](#ALL) [ATOM](#ATOM) [BEGINNING](#BEGINNING) [END](#END) [FIRST](#FIRST) [LAST](#LAST)
-[MAP-VALS](#MAP-VALS) [NIL->LIST](#NIL-LIST) [NIL->SET](#NIL-SET) [NIL->VECTOR](#NIL-VECTOR)
-[STAY](#STAY) [STOP](#STOP) [VAL](#VAL)
+[ALL](#all) [ATOM](#atom) [BEGINNING](#beginning) [END](#end) [FIRST](#first) [LAST](#last)
+[MAP-VALS](#map-vals) [NIL->LIST](#nil-list) [NIL->SET](#nil-set) [NIL->VECTOR](#nil-vector)
+[STAY](#stay) [STOP](#stop) [VAL](#val)
 
 [codewalker](#codewalker) [collect](#collect) [collect-one](collect-one) [comp-paths](#comp-paths)
 [compiled-replace-in](#compiled-*) [compiled-select](#compiled-*) [compiled-select-first](#compiled-*)
