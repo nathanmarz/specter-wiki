@@ -21,7 +21,7 @@
 
 ### ALL
 
-`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. Reconstructs collection items as a vector when used in a select.
+`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
 
 ```clojure
 => (select ALL [0 1 2 3])
@@ -61,6 +61,8 @@
 (0 1 2 3 4 5 6)
 => (setval BEGINNING {0 1} (range 2 7))
 ([0 1] 2 3 4 5 6)
+=> (setval BEGINNING '(0 1) [2 3 4])
+[0 1 2 3 4]
 => (setval BEGINNING {:foo :baz} {:foo :bar})
 ([:foo :baz] [:foo :bar])
 ```
@@ -76,6 +78,8 @@
 (0 1 2 3 4 5 6)
 => (setval END {5 6} (range 5))
 (0 1 2 3 4 [5 6])
+=> (setval END '(5 6) [1 2 3 4])
+[1 2 3 4 5 6]
 => (setval END {:foo :baz} {:foo :bar})
 ([:foo :bar] [:foo :baz])
 ```
