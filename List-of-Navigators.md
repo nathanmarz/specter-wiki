@@ -203,7 +203,7 @@ data structure. `codewalker` preserves the metadata of any forms traversed. Retu
 See also [walker](#walker).
 
 ```clojure
-=> (select (codewalker #(if (map? %) (even? (get % :a)) false)) 
+=> (select (codewalker #(and (map? %) (even? (:a %)))) 
            (list (with-meta {:a 2} {:foo :bar}) (with-meta {:a 1} {:foo :baz})))
 ({:a 2})
 => (map meta *1)
@@ -709,15 +709,15 @@ data structure. Returns a lazy seq when used in a select.
 See also [codewalker](#codewalker)
 
 ```clojure
-=> (select (walker #(if (number? %) (even? %) false)) '(1 (3 4) 2 (6)))
+=> (select (walker #(and (number? %) (even? %))) '(1 (3 4) 2 (6)))
 (4 2 6)
 ;; Note that (3 4) and (6 7) are not returned because the search halted at
 ;; (2 (3 4) (5 (6 7))).
-=> (select (walker #(if (counted? %) (even? (count %)) false)) 
+=> (select (walker #(and (counted? %) (even? (count %)))) 
      '(1 (2 (3 4) 5 (6 7)) (8 9)))
 ((2 (3 4) 5 (6 7)) (8 9))
-=> (transform (walker #(if (counted? %) (even? (count %)) false)) 
-              (fn [_] :double)
-              '(1 (2 (3 4) 5 (6 7)) (8 9)))
+=> (setval (walker #(and (counted? %) (even? (count %)))) 
+           :double
+           '(1 (2 (3 4) 5 (6 7)) (8 9)))
 (1 :double :double)
 ```
