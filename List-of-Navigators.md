@@ -3,7 +3,7 @@
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
 
 [ALL](#ALL) [ATOM](#ATOM) [BEGINNING](#BEGINNING) [END](#END) [FIRST](#FIRST) [LAST](#LAST)
-[MAP-VALS](#MAP-VALS) [NIL->LIST](#NIL-\>LIST) [NIL->SET](#NIL->SET) [NIL->VECTOR](#NIL->VECTOR)
+[MAP-VALS](#MAP-VALS) [NIL->LIST](#NIL-LIST) [NIL->SET](#NIL-SET) [NIL->VECTOR](#NIL-VECTOR)
 [STAY](#STAY) [STOP](#STOP) [VAL](#VAL)
 
 [codewalker](#codewalker) [collect](#collect) [collect-one](collect-one) [comp-paths](#comp-paths)
@@ -11,7 +11,7 @@
 [compiled-select-one](#compiled-*) [compiled-select-one!](#compiled-*) [compiled-setval](#compiled-*)
 [compiled-transform](#compiled-*) [cond-path](#cond-path) [continue-then-stay](#continue-then-stay)
 [continuous-subseqs](#continuous-subseqs) [filterer](#filterer) [if-path](#if-path)
-[keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil->val) [params-reset](#params-reset)
+[keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil-val) [params-reset](#params-reset)
 [parser](#parser) [pred](#pred) [putval](#putval) [not-selected?](#not-selected?) 
 [selected?](#selected?) [srange](#srange) [srange-dynamic](#srange-dynamic)
 [stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
