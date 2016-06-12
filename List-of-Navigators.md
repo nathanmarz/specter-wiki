@@ -52,7 +52,7 @@
 
 ### BEGINNING
 
-`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence. Returns a lazy sequence when used in a select.
+`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence.
 
 ```clojure
 => (setval BEGINNING '(0 1) (range 2 7))
@@ -67,7 +67,7 @@
 
 ### END
 
-`END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. Returns a lazy sequence.
+`END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. 
 
 ```clojure
 => (setval END '(5 6) (range 5))
@@ -82,7 +82,7 @@
 
 ### FIRST
 
-`FIRST` navigates to the first element of a collection. If the collection is a map, returns the key-value pair `[key value]`. If the collection is empty, navigation stops.
+`FIRST` navigates to the first element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
 
 ```clojure
 => (select-one FIRST (range 5))
@@ -99,7 +99,7 @@ nil
 
 ### LAST
 
-`LAST` navigates to the last element of a collection. If the collection is a map, returns the key-value pair `[key value]`. If the collection is empty, navigation stops.
+`LAST` navigates to the last element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
 
 ```clojure
 => (select-one LAST (range 5))
@@ -116,7 +116,7 @@ nil
 
 ### MAP-VALS
 
-`MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`. Returns a lazy seq when used in a select.
+`MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`.
 
 ```clojure
 => (select MAP-VALS {:a :b, :c :d})
@@ -203,7 +203,7 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 Using clojure.walk, `codewalker` executes a depth-first search for nodes where `afn`
 returns a truthy value. When `afn` returns a truthy value, `codewalker` stops
 searching that branch of the tree and continues its search of the rest of the
-data structure. `codewalker` preserves the metadata of any forms traversed. Returns a lazy seq when used in a select.
+data structure. `codewalker` preserves the metadata of any forms traversed.
 
 See also [walker](#walker).
 
@@ -264,7 +264,7 @@ See also [VAL](#val), [collect](#collect), and [putval](#putval)
 `(comp-paths & path)`
 
 Returns a compiled version of the given path for use with compiled-{select/transform/setval/etc.} functions. This can compile navigators (defined with `defnav`) without their parameters, and the resulting compiled
-path will require parameters for all such navigators in the order in which they were declared. Provides a speed improvement of about 2-15% over the inline caching introduced with version 0.11.2.
+path will require parameters for all such navigators in the order in which they were declared. Precompiling a path and using the corresponding compiled `select` or `transform` operation will provide a slight speed improvement (2-3%) over relying on inline factoring and caching.
 
 ```clojure
 => (let [my-path (comp-paths :a :b :c)]
@@ -310,7 +310,7 @@ See also [if-path](#if-path)
 `(continue-then-stay & path)`
 
 Navigates to the provided path and then to the current element. This can be used
-to implement post-order traversal. Returns a lazy seq when used in a select.
+to implement post-order traversal.
 
 See also [stay-then-continue](#stay-then-continue).
 
@@ -323,7 +323,7 @@ See also [stay-then-continue](#stay-then-continue).
 
 `(continuous-subseqs pred)`
 
-Navigates to every continuous subsequence of elements matching `pred`. Returns a lazy seq when used in a select.
+Navigates to every continuous subsequence of elements matching `pred`.
 
 ```clojure
 => (select (continuous-subseqs #(< % 10)) [5 6 11 11 3 12 2 5])
@@ -344,7 +344,7 @@ on that element with the path yields anything other than an empty sequence. Retu
 
 The input path may be parameterized, in which case the result of filterer
 will be parameterized in the order of which the parameterized selectors
-were declared. Note that filterer is a function which returns a navigator. It is the arguments to filterer that can be parametrized, not filterer.
+were declared. Note that filterer is a function which returns a navigator. It is the arguments to filterer that can be late-bound parameterized, not filterer.
 
 See also [subselect](#subselect).
 
@@ -408,7 +408,7 @@ See also [must](#must)
 
 `(multi-path & paths)`
 
-A path that branches on multiple paths. For updates,
+A path that branches on multiple paths. For transforms,
 applies updates to the paths in order.
 
 ```clojure
@@ -563,9 +563,9 @@ nil
 `(srange start end)`
 
 Navigates to the subsequence bound by the indexes start (inclusive)
-and end (exclusive). Returns a vector when used in a select.
+and end (exclusive).
 
-See also [srange-dynamic](#srange-dynamic) and [subselect](#subselect).
+See also [srange-dynamic](#srange-dynamic).
 
 ```clojure
 => (select-one (srange 2 4) (range 5))
@@ -581,7 +581,7 @@ IndexOutOfBoundsException
 `(srange-dynamic start-fn end-fn)`
 
 Uses start-fn and end-fn to determine the bounds of the subsequence
-to select when navigating. Each function takes in the structure as input. Returns a vector when used in a select.
+to select when navigating. Each function takes in the structure as input.
 
 See also [srange](#srange).
 
@@ -643,7 +643,7 @@ Requires that the input navigators will walk the structure's
 children in the same order when executed on "select" and then
 "transform".
 
-See also [srange](#srange) and [filterer](#filterer).
+See also [filterer](#filterer).
 
 ```clojure
 => (transform (subselect (walker number?) even?)
@@ -709,7 +709,7 @@ See also [transformed](#transformed).
 Using clojure.walk, `walker` executes a depth-first search for nodes where `afn`
 returns a truthy value. When `afn` returns a truthy value, `walker` stops
 searching that branch of the tree and continues its search of the rest of the
-data structure. Returns a lazy seq when used in a select.
+data structure.
 
 See also [codewalker](#codewalker)
 
