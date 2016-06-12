@@ -458,7 +458,7 @@ navigated at the structure.
 
 `(params-reset params-path)`
 
-Resets the index in the parameter list to 0. Useful for defining recursive navigators.
+Instructs the provided navigator to backtrack in the params array by the number of parameters it requires before navigating. Useful for defining recursive navigators.
 
 ```clojure
 => (let [k-path (comp-paths must (params-reset must))] 
