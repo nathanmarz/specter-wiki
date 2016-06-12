@@ -17,7 +17,7 @@
 [stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
 [transformed](#transformed) [view](#view) [walker](#walker)
 
-## The All Caps Ones
+## Unparameterized Navigators
 
 ### ALL
 
@@ -194,7 +194,7 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 (5 6 7 8 9)
 ```
 
-## the lower case ones
+## Parameterized Navigators
 
 ### codewalker
 
