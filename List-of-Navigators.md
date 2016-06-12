@@ -458,7 +458,24 @@ navigated at the structure.
 
 `(params-reset params-path)`
 
-Not sure. Figure this one out later.
+Resets the index in the parameter list to 0. Useful for defining recursive navigators.
+
+```clojure
+=> (let [k-path (comp-paths must (params-reset must))] 
+     (select-one (k-path :a) {:a {:a 0}}))
+0
+=> (let [k-path (comp-paths must (params-reset must) must)] 
+     (select-one (k-path :a :b) {:a {:a {:b 1}}}))
+1
+;; A recursive navigator that iteratively navigates to a passed in key
+=> (declarepath MyWalker [k])
+=> (providepath MyWalker
+     (stay-then-continue must (params-reset MyWalker)))
+=> (select (MyWalker :a) {:a {:a {:b 2}}})
+({:a {:a {:b 2}}} {:a {:b 2}} {:b 2})
+=> (select (MyWalker :a) {:a {:b {:a 0}}})
+({:a {:b {:a 0}}} {:b {:a 0}})
+```
 
 ### parser
 
