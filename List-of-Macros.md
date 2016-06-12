@@ -8,9 +8,7 @@
 
 `(declarepath name params)`
 
-Declares a new symbol available to be defined as a path. If the path will require parameters, these must be specified here.
-
-See also [providepath](#providepath)
+Declares a new symbol available to be defined as a path. If the path will require parameters, these must be specified here. The path itself must be defined using [providepath](#providepath).
 
 ```clojure
 => (declarepath SECOND)
@@ -21,6 +19,12 @@ See also [providepath](#providepath)
 (0 0 2 3 4)
 ```
 
+### providepath
+
+`(providepath name apath)`
+
+Defines the path that will be associated to the provided name. The name must have been previously declared using [declarepath](#declarepath).
+
 ## Collector Macros
 
 ### defcollector
@@ -29,7 +33,9 @@ See also [providepath](#providepath)
 
 Defines a collector with the given name and parameters. Collectors are navigators which add a value to the list of collected values and do not change the current structure.
 
-Note that `params` should be a vector, as would follow `fn`. `collect-val-impl` must be of the form `(collect-val [this structure] body)`. It should return the value to be collected.
+Note that `params` should be a vector, as would follow `fn`.
+
+`collect-val-impl` must be of the form `(collect-val [this structure] body)`. It should return the value to be collected.
 
 An informative example is the actual implementation of `putval`, which follows.
 
@@ -56,7 +62,7 @@ as would follow `fn`.
 
 `select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever transformation the navigator applies to `structure`.
 
-`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever transformation the navigator applies to `structure`. Then it should return the result of reconstructing the original structure with the results of the `nextfn` call.
+`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever transformation the navigator applies to `structure`. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
 
 See also [nav](#nav)
 
