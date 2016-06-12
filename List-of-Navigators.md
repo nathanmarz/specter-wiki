@@ -43,6 +43,9 @@
 => (swap! a inc)
 => (select-one ATOM a)
 1
+=> (transform ATOM inc a)
+=> @a
+2
 ```
 
 ### BEGINNING
