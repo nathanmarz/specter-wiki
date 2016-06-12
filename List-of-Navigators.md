@@ -16,12 +16,11 @@
 [selected?](#selected?) [srange](#srange) [srange-dynamic](#srange-dynamic)
 [stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
 [transformed](#transformed) [view](#view) [walker](#walker)
-
 ## Unparameterized Navigators
 
 ### ALL
 
-`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. Reconstructs collection items as a vector when used in a select.
+`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
 
 ```clojure
 => (select ALL [0 1 2 3])
@@ -61,6 +60,8 @@
 (0 1 2 3 4 5 6)
 => (setval BEGINNING {0 1} (range 2 7))
 ([0 1] 2 3 4 5 6)
+=> (setval BEGINNING '(0 1) [2 3 4])
+[0 1 2 3 4]
 => (setval BEGINNING {:foo :baz} {:foo :bar})
 ([:foo :baz] [:foo :bar])
 ```
@@ -76,6 +77,8 @@
 (0 1 2 3 4 5 6)
 => (setval END {5 6} (range 5))
 (0 1 2 3 4 [5 6])
+=> (setval END '(5 6) [1 2 3 4])
+[1 2 3 4 5 6]
 => (setval END {:foo :baz} {:foo :bar})
 ([:foo :bar] [:foo :baz])
 ```
@@ -458,7 +461,7 @@ navigated at the structure.
 
 `(params-reset params-path)`
 
-Resets the index in the parameter list to 0. Useful for defining recursive navigators.
+Instructs the provided navigator to backtrack in the params array by the number of parameters it requires before navigating. Useful for defining recursive navigators.
 
 ```clojure
 => (let [k-path (comp-paths must (params-reset must))] 
