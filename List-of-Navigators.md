@@ -19,7 +19,7 @@
 
 ### ALL
 
-`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
+`ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`. Reconstructs collection items as a vector when used in a select.
 
 ```clojure
 => (select ALL [0 1 2 3])
@@ -47,7 +47,7 @@
 
 ### BEGINNING
 
-`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence. Returns a lazy sequence.
+`BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence. Returns a lazy sequence when used in a select.
 
 ```clojure
 => (setval BEGINNING '(0 1) (range 2 7))
@@ -111,7 +111,7 @@ nil
 
 ### MAP-VALS
 
-`MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`. Note that `MAP-VALS` returns a lazy seq.
+`MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`. Returns a lazy seq when used in a select.
 
 ```clojure
 => (select MAP-VALS {:a :b, :c :d})
@@ -164,7 +164,7 @@ nil
 
 ### STOP
 
-`STOP` stops navigation. For selection, returns nil. For transformation, returns the structure unchanged.
+`STOP` stops navigation. For transformation, returns the structure unchanged.
 
 ```clojure
 => (select-one STOP :foo)
@@ -198,7 +198,7 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 Using clojure.walk, `codewalker` executes a depth-first search for nodes where `afn`
 returns a truthy value. When `afn` returns a truthy value, `codewalker` stops
 searching that branch of the tree and continues its search of the rest of the
-data structure. `codewalker` preserves the metadata of any forms traversed.
+data structure. `codewalker` preserves the metadata of any forms traversed. Returns a lazy seq when used in a select.
 
 See also [walker](#walker).
 
@@ -214,7 +214,7 @@ See also [walker](#walker).
 
 `(collect & paths)`
 
-`collect` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
+`collect` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
 
 See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 
@@ -239,7 +239,7 @@ See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 
 `(collect-one & paths)`
 
-`collect-one` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed in as an argument to the transforming function, with the resulting value as the last argument.
+`collect-one` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
 
 See also [VAL](#val), [collect](#collect), and [putval](#putval)
 
@@ -305,7 +305,7 @@ See also [if-path](#if-path)
 `(continue-then-stay & path)`
 
 Navigates to the provided path and then to the current element. This can be used
-to implement post-order traversal.
+to implement post-order traversal. Returns a lazy seq when used in a select.
 
 See also [stay-then-continue](#stay-then-continue).
 
@@ -318,13 +318,15 @@ See also [stay-then-continue](#stay-then-continue).
 
 `(continuous-subseqs pred)`
 
-Navigates to every continuous subsequence of elements matching `pred`.
+Navigates to every continuous subsequence of elements matching `pred`. Returns a lazy seq when used in a select.
 
 ```clojure
 => (select (continuous-subseqs #(< % 10)) [5 6 11 11 3 12 2 5])
 ([5 6] [3] [2 5])
 => (select (continuous-subseqs #(< % 10)) [12 13])
 ()
+=> (setval (continuous-subseqs #(< % 10)) [] [3 2 5 11 12 5 20])
+[11 12 20]
 ```
 
 ### filterer
@@ -333,11 +335,13 @@ Navigates to every continuous subsequence of elements matching `pred`.
 
 Navigates to a view of the current sequence that only contains elements that
 match the given path. An element matches the selector path if calling select
-on that element with the path yields anything other than an empty sequence.
+on that element with the path yields anything other than an empty sequence. Returns a vector when used in a select.
 
 The input path may be parameterized, in which case the result of filterer
 will be parameterized in the order of which the parameterized selectors
 were declared. Note that filterer is a function which returns a navigator. It is the arguments to filterer that can be parametrized, not filterer.
+
+See also [subselect](#subselect).
 
 ```clojure
 ;; Note that clojure functions have been extended to implement the navigator protocol
@@ -554,15 +558,17 @@ nil
 `(srange start end)`
 
 Navigates to the subsequence bound by the indexes start (inclusive)
-and end (exclusive).
+and end (exclusive). Returns a vector when used in a select.
 
-See also [srange-dynamic](#srange-dynamic).
+See also [srange-dynamic](#srange-dynamic) and [subselect](#subselect).
 
 ```clojure
 => (select-one (srange 2 4) (range 5))
 [2 3]
 => (select-one (srange 0 10) (range 5))
 IndexOutOfBoundsException
+=> (setval (srange 2 4) [] (range 5))
+(0 1 4)
 ```
 
 ### srange-dynamic
@@ -570,7 +576,7 @@ IndexOutOfBoundsException
 `(srange-dynamic start-fn end-fn)`
 
 Uses start-fn and end-fn to determine the bounds of the subsequence
-to select when navigating. Each function takes in the structure as input.
+to select when navigating. Each function takes in the structure as input. Returns a vector when used in a select.
 
 See also [srange](#srange).
 
@@ -625,16 +631,20 @@ value of the submap.
 
 Navigates to a sequence that contains the results of (select ...),
 but is a view to the original structure that can be transformed.
+Without subselect, we could only transform selected values individually.
+`subselect` lets us transform them together as a seq, much like `filterer`.
 
 Requires that the input navigators will walk the structure's
 children in the same order when executed on "select" and then
 "transform".
 
-I don't know what this one is good for yet. The below example could easily be written with just transformed.
+See also [srange](#srange) and [filterer](#filterer).
 
 ```clojure
-=> (select-one [(subselect ALL (transformed STAY inc)) FIRST] (range 5))
-1
+=> (transform (subselect (walker number?) even?)
+     reverse
+     [1 [[[2]] 3] 5 [6 [7 8]] 10])
+[1 [[[10]] 3] 5 [8 [7 6]] 2]
 ```
 
 ### subset
@@ -694,7 +704,7 @@ See also [transformed](#transformed).
 Using clojure.walk, `walker` executes a depth-first search for nodes where `afn`
 returns a truthy value. When `afn` returns a truthy value, `walker` stops
 searching that branch of the tree and continues its search of the rest of the
-data structure.
+data structure. Returns a lazy seq when used in a select.
 
 See also [codewalker](#codewalker)
 
