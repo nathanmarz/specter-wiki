@@ -23,7 +23,17 @@ Declares a new symbol available to be defined as a path. If the path will requir
 
 `(defpathedfn name & args)`
 
-This is sugar to add [:pathedfn true] to the metadata map of the function. The syntax is the same as `defn` (optional docstring, etc.). Often used with [fixed-pathed-nav](#fixed-pathed-nav) or [variable-pathed-nav](#variable-pathed-nav) to enable late binding parameters. Non-path arguments should be preceded by ^:notpath.
+Defines a higher order navigator (a function that returns a navigator) that itself takes in one or more paths
+as input. This macro is generally used in conjunction with [fixed-pathed-nav](#fixed-pathed-nav)
+or [variable-pathed-nav](#variable-pathed-nav). When inline factoring is applied to a path containing
+one of these higher order navigators, it will automatically interepret all 
+arguments as paths, factor them accordingly, and set up the callsite to 
+provide the parameters dynamically. Use `^:notpath` metadata on arguments 
+to indicate non-path arguments that should not be factored – note that in order
+to be inline factorable, these arguments must be statically resolvable (e.g. a 
+top level var).
+
+The syntax is the same as `defn` (optional docstring, etc.).
 
 ```clojure
 => (defpathedfn walk-pred 
@@ -77,6 +87,15 @@ Currently not available for ClojureScript.
      [(->SingleAccount 100) (->SingleAccount 3) 
       (->FamilyAccount [(->SingleAccount 15) (->SingleAccount 12)])])
 [100 3 15 12]
+
+=> (defprotocolpath AfterFeePath [fee-fn])
+=> (extend-protocolpath AfterFeePath 
+     SingleAccount [:funds view] 
+     FamilyAccount [:single-accounts ALL AfterFeePath])
+=> (select [ALL (AfterFeePath dec)] 
+     [(->SingleAccount 100) (->SingleAccount 3) 
+      (->FamilyAccount [(->SingleAccount 15) (->SingleAccount 12)])])
+[99 2 14 11]
 ```
 
 ### extend-protocolpath
