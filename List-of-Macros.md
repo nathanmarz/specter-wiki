@@ -282,7 +282,13 @@ Returns an "anonymous navigator." See [defnav](#defnav).
 Helper macro for defining filter functions with late binding parameters.
 
 ```clojure
-=> (let [c-path (comp-paths (paramsfn [val] [x] (< x val)))]
-     (select [ALL (c-path 5)] [2 7 3 4 10 8]))
+;; val is the parameter that will be bound at a later time to complete the navigator
+;; x represents the current structure for the navigator
+=> (def less-than-n-pred (comp-paths (paramsfn [val] [x] (< x val))))
+=> (select [ALL (less-than-n-pred 5)] [2 7 3 4 10 8])
 [2 3 4]
+=> (select [ALL (less-than-n-pred 9)] [2 7 3 4 10 8])
+[2 7 3 4 8]
+=> (transform [ALL (less-than-n-pred 9)] inc [2 7 3 4 10 8])
+[3 8 4 5 10 9]
 ```
