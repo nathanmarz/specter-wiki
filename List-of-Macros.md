@@ -151,23 +151,22 @@ Binds the passed in seq of paths to `paths-binding`, which can be used in `selec
 The implementation of `multi-path` is a nice example of the use of `variable-pathed-nav`.
 
 ```clojure
-=> (defpathedfn multi-path
-     [& paths]
-     (variable-pathed-nav [compiled-paths paths]
-       (select* [this structure next-fn]
-         (->> compiled-paths
-              ;; seq with the results of navigating each passed in path
-              (mapcat #(compiled-select % structure))
-              ;; pass each result to the following navigator
-              (mapcat next-fn)
-              doall))
-       (transform* [this structure next-fn]
-         ;; apply the transform to each passed in path in order
-         (reduce
-           (fn [structure path]
-             (compiled-transform path next-fn structure))
-           structure
-           compiled-paths))))
+(defpathedfn multi-path [& paths]
+  (variable-pathed-nav [compiled-paths paths]
+    (select* [this structure next-fn]
+      (->> compiled-paths
+           ;; seq with the results of navigating each passed in path
+           (mapcat #(compiled-select % structure))
+           ;; pass each result to the next navigator
+           (mapcat next-fn)
+           doall))
+    (transform* [this structure next-fn]
+      ;; apply the transform to each passed in path in order
+      (reduce
+        (fn [structure path]
+          (compiled-transform path next-fn structure))
+        structure
+        compiled-paths))))
 ```
 
 ## Collector Macros
@@ -219,12 +218,10 @@ Binds the passed in path to `name`.
 The implementation of `collect` is a good example of how `pathed-collector` can be used.
 
 ```clojure
-=> (defpathedfn
-     collect
-     [& path]
-     (pathed-collector [late path]
-       (collect-val [this structure]
-         (compiled-select late structure))))
+(defpathedfn collect [& path]
+  (pathed-collector [late path]
+    (collect-val [this structure]
+      (compiled-select late structure))))
 ```
 
 ## Navigator Macros
