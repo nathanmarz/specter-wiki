@@ -291,4 +291,9 @@ Helper macro for defining filter functions with late binding parameters.
 [2 7 3 4 8]
 => (transform [ALL (less-than-n-pred 9)] inc [2 7 3 4 10 8])
 [3 8 4 5 10 9]
+;; bot and top are late bound parameters
+;; x represents the current structure for the navigator
+=> (def between (comp-paths (paramsfn [bot top] [x] (and (< bot x) (< x top)))))
+=> (select [ALL (between 1 5)] (range 10))
+[2 3 4]
 ```
