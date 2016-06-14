@@ -121,9 +121,9 @@ are required, then the result is executable.
 
 `bindings` must be of the form `[path-binding1 path1 path-binding2 path2...]`.
 
-`select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever transformation the navigator applies to `structure`.
+`select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever subcollection of `structure` this navigator selects.
 
-`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever transformation the navigator applies to `structure`. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
+`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever subcollection of `structure` this navigator selects. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
 
 See [defpathedfn](#defpathedfn) for an example.
 
@@ -237,9 +237,9 @@ Canonically the first is used.
 Defines a navigator with given name and parameters. Note that `params` should be a vector,
 as would follow `fn`.
 
-`select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever transformation the navigator applies to `structure`.
+`select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever subcollection of `structure` this navigator selects.
 
-`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever transformation the navigator applies to `structure`. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
+`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever subcollection of `structure` this navigator selects. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
 
 See also [nav](#nav)
 
