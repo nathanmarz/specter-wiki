@@ -299,7 +299,43 @@ of the path for later re-use (when possible). For almost all idiomatic uses
 of Specter provides huge speedup. This macro is automatically used by the
 select/transform/setval/replace-in/etc. macros.
 
+The arguments to `path` cannot include local symbols (defined in a `let`), dynamic vars, or special forms (like `if`). In these cases, specter will throw an exception detailing what went wrong.
+
+Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime. `path` cannot be passed late bound parameters.
+
+In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you don't lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you don't do this by calling `(must-cache-paths!)`.
+
 ```clojure
+=> (def p (path even?))
+=> (select [ALL p] (range 10))
+[0 2 4 6 8]
+
+=> (def p (let [apred even?] (path apred)))
+Failed to cache path: Local symbol apred where navigator expected
+;; Wrap predicate functions in pred to allow caching
+=> (def p (let [apred even?] (path (pred apred)))) ; No exception thrown
+=> (def ^:dynamic *apred*)
+=> (def p (binding [*apred* even?] (path *apred*)))
+Failed to cache path: Var *apred* is dynamic
+=> (def p (path (if true even? odd?)))
+Failed to cache path: Special form (if true even? odd?) where navigator expected
+;; Replace if with if-path
+=> (def p (path (if-path (fn [_] true) even? odd?))) ; No exception thrown
+=> (select [ALL p] (range 10))
+
+=> (def p (path pred))
+Failed to cache path: Var pred is not a navigator
+;; Instead we need to provide pred with its argument, even if the argument
+;; will not be determined until runtime
+=> (defn p [apred] (path ALL (pred apred)))
+;; Use compiled-select because we have precompiled our path
+=> (compiled-select (p odd?) (range 10))
+[1 3 5 7 9]
+
+;; More idiomatic solution of the above
+=> (def p (comp-paths ALL pred))
+=> (select (p odd?) (range 10))
+[1 3 5 7 9]
 ```
 
 ## providepath
