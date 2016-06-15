@@ -2,6 +2,33 @@
 
 ## Core Macros
 
+### replace-in
+
+`(replace-in apath transform-fn structure & args)`
+
+Similar to transform, except returns a pair of [transformed-structure sequence-of-user-ret].
+The transform-fn in this case is expected to return [ret user-ret]. ret is
+what's used to transform the data structure, while user-ret will be added to the user-ret sequence
+in the final return. replace-in is useful for situations where you need to know the specific values
+of what was transformed in the data structure.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+Note that the `user-ret` portion of the return value of `transform-fn` must be a sequence in order to be joined onto all previous user-return values.
+
+`replace-in` takes an optional argument `:merge-fn`. `merge-fn` takes two arguments `[curr-user-ret new-user-ret]` and should return a new user-return value. If no user-return values have been added, `user-ret` will be `nil`.
+
+```clojure
+;; double and save evens
+=> (replace-in [ALL even?] (fn [x] [(* 2 x) [x]]) (range 10))
+[(0 1 4 3 8 5 12 7 16 9) (0 2 4 6 8)]
+;; double evens and save largest even
+=> (replace-in [ALL even?] (fn [x] [(* 2 x) x]) [3 2 8 5 6]
+     :merge-fn (fn [curr new] (if (nil? curr) new (max curr new))))
+[[3 4 16 5 12] 8]
+```
+
 ### select
 
 `(select apath structure)`
@@ -18,6 +45,100 @@ factor/cache the path.
 [0]
 => (select ALL {:a 0 :b 1})
 [[:a 0] [:b 1]]
+```
+
+### select-first
+
+`(select-first apath structure)`
+
+Returns first element found. Not any more efficient than select, just a convenience.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (select-first ALL (range 10))
+0
+;; Returns the result itself if the result is not a sequence
+=> (select-first FIRST (range 10))
+0
+```
+
+### select-one
+
+`(select-one apath structure)`
+
+Like select, but returns either one element or nil. Throws exception if multiple elements found.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+```clojure
+;; srange returns one collection
+=> (select (srange 2 7) (range 10))
+[[2 3 4 5 6]]
+=> (select-one (srange 2 7) (range 10))
+[2 3 4 5 6]
+=> (select-one ALL (range 10))
+IllegalArgumentException More than one element found for params
+```
+
+### select-one!
+
+`(select-one! apath structure)`
+
+Returns exactly one element, throws exception if zero or multiple elements found.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (select-one! FIRST (range 5))
+0
+;; zero results, throws exception
+=> (select-one! [ALL even? odd?] (range 10))
+IllegalArgumentException Expected exactly one element for params
+;; multiple results, throws exception
+=> (select-one! [ALL even?] (range 10))
+IllegalArgumentException Expected exactly one element for params
+```
+
+### setval
+
+`(setval apath aval structure)`
+
+Navigates to each value specified by the path and replaces it by `aval`.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (setval [ALL even?] :even (range 10))
+(:even 1 :even 3 :even 5 :even 7 :even 9)
+```
+
+### transform
+
+`(transform apath transform-fn structure)`
+
+Navigates to each value specified by the path and replaces it by the result of running
+the transform-fn on it.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+Note that `transform` takes as its initial arguments any collected values. Its last argument will be the structure navigated to by the passed in path.
+
+```clojure
+=> (transform [ALL] #(* % 2) (range 10))
+(0 2 4 6 8 10 12 14 16 18)
+;; putval collects its argument
+=> (transform [(putval 2) ALL] * (range 10))
+(0 2 4 6 8 10 12 14 16 18)
+=> (transform [(putval 2) (walker #(and (integer? %) (even? %)))] * [[[[1] 2]] 3 4 [5 6] [7 [[8]]]])
+[[[[1] 4]] 3 8 [5 12] [7 [[16]]]]
+=> (transform [ALL] (fn [[k v]] [k {:key k :val v}]) {:a 0 :b 1})
+{:a {:key :a, :val 0}, :b {:key :b, :val 1}}
 ```
 
 ## Path Macros
@@ -54,7 +175,7 @@ to indicate non-path arguments that should not be factored – note that in orde
 to be inline factorable, these arguments must be statically resolvable (e.g. a 
 top level var).
 
-The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) for wrapping an existing navigator or [defnav](#defnav) for defining your own custom navigator.
+The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) to wrap an existing navigator or [defnav](#defnav) to define your own custom navigator.
 
 ```clojure
 ;; The implementation of transformed
