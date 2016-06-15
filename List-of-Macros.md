@@ -37,9 +37,9 @@
 
 `(replace-in apath transform-fn structure & args)`
 
-Similar to transform, except returns a pair of [transformed-structure sequence-of-user-ret].
-The transform-fn in this case is expected to return [ret user-ret]. ret is
-what's used to transform the data structure, while user-ret will be added to the user-ret sequence
+Similar to `transform`, except returns a pair of `[transformed-structure sequence-of-user-ret]`.
+The transform-fn in this case is expected to return `[ret user-ret]`. ret is
+what's used to transform the data structure, while `user-ret` will be added to the `user-ret` sequence
 in the final return. replace-in is useful for situations where you need to know the specific values
 of what was transformed in the data structure.
 This macro will attempt to do inline factoring and caching of the path, falling
@@ -82,7 +82,7 @@ factor/cache the path.
 
 `(select-first apath structure)`
 
-Returns first element found. Not any more efficient than select, just a convenience.
+Returns first element found. Not any more efficient than `select`, just a convenience.
 This macro will attempt to do inline factoring and caching of the path, falling
 back to compiling the path on every invocation it it's not possible to 
 factor/cache the path.
@@ -99,7 +99,7 @@ factor/cache the path.
 
 `(select-one apath structure)`
 
-Like select, but returns either one element or nil. Throws exception if multiple elements found.
+Like `select`, but returns either one element or nil. Throws exception if multiple elements found.
 This macro will attempt to do inline factoring and caching of the path, falling
 back to compiling the path on every invocation it it's not possible to 
 factor/cache the path.
@@ -206,7 +206,7 @@ to indicate non-path arguments that should not be factored – note that in orde
 to be inline factorable, these arguments must be statically resolvable (e.g. a 
 top level var).
 
-The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) to wrap an existing navigator or [defnav](#defnav) to define your own custom navigator.
+The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) to wrap an existing navigator, [defnav](#defnav) to define your own custom navigator, or create a path with late bound parameters using `comp-paths`.
 
 ```clojure
 ;; The implementation of transformed
@@ -294,7 +294,7 @@ See [defpathedfn](#defpathedfn) for an example.
 
 `(path & path)`
 
-Same as calling comp-paths, except it caches the composition of the static part
+Same as calling `comp-paths`, except it caches the composition of the static part
 of the path for later re-use (when possible). For almost all idiomatic uses
 of Specter provides huge speedup. This macro is automatically used by the
 select/transform/setval/replace-in/etc. macros.
@@ -303,7 +303,7 @@ The arguments to `path` cannot include local symbols (defined in a `let`), dynam
 
 Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime. `path` cannot be passed late bound parameters.
 
-In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you don't lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you don't do this by calling `(must-cache-paths!)`.
+**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`.
 
 ```clojure
 => (def p (path even?))
@@ -406,23 +406,23 @@ An informative example is the actual implementation of `putval`, which follows.
 
 `(paramscollector params collect-val-impl)`
 
-Defines a Collector with late bound parameters. This collector can be precompiled
+Defines a collector with late bound parameters. This collector can be precompiled
 with other selectors without knowing the parameters. When precompiled with other
 selectors, the resulting selector takes in parameters for all selectors in the path
 that needed parameters (in the order in which they were declared).
 
-Returns an "anonymous Collector." See [defcollector](#defcollector).
+Returns an "anonymous collector." See [defcollector](#defcollector).
 
 ## pathed-collector
 
-`(pathed-collector [name path] collect-val-impl)`
+`(pathed-collector [path-binding path] collect-val-impl)`
 
 This helper is used to define collectors that take in a single selector
-paths as input. That path may require late-bound params, so this helper
+path as input. That path may require late-bound params, so this helper
 will create a parameterized selector if that is the case. If no late-bound params
 are required, then the result is executable.
 
-Binds the passed in path to `name`.
+Binds the passed in path to `path-binding`.
 
 `collect-val-impl` must be of the form `(collect-val [this structure] body)`. It should return the value to be collected.
 
@@ -493,7 +493,8 @@ Note that `defnavconstructor` takes an optional docstring and metadata in the sa
 ;; A constructor for the walker navigator which adds the requirement that the
 ;; structure be an integer to walker's afn predicate
 => (defnavconstructor walk-ints
-     "Arguments passed to this walker's afn must also be integers to return true."
+     "Arguments passed to this walker's predicate must also be integers to
+     return true."
      [p walker]
      [apred]
      (p #(and (integer? %) (apred %))))
