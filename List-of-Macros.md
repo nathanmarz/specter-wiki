@@ -303,7 +303,7 @@ The arguments to `path` cannot include local symbols (defined in a `let`), dynam
 
 Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime. `path` cannot be passed late bound parameters.
 
-**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`.
+**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`. You can find a more detailed discussion of inline caching [here](https://github.com/nathanmarz/specter/wiki/Specter-0.11.0:-Performance-without-the-tradeoffs).
 
 ```clojure
 => (def p (path even?))
