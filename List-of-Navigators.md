@@ -12,8 +12,8 @@
 [compiled-transform](#compiled-*) [cond-path](#cond-path) [continue-then-stay](#continue-then-stay)
 [continuous-subseqs](#continuous-subseqs) [filterer](#filterer) [if-path](#if-path)
 [keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil-val) [params-reset](#params-reset)
-[parser](#parser) [pred](#pred) [putval](#putval) [not-selected?](#not-selected?) 
-[selected?](#selected?) [srange](#srange) [srange-dynamic](#srange-dynamic)
+[parser](#parser) [pred](#pred) [putval](#putval) [not-selected?](#not-selected) 
+[selected?](#selected) [srange](#srange) [srange-dynamic](#srange-dynamic)
 [stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
 [transformed](#transformed) [view](#view) [walker](#walker)
 ## Unparameterized Navigators
