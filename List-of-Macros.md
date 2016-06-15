@@ -1,5 +1,25 @@
 # List of Macros with Examples
 
+## Core Macros
+
+### select
+
+`(select apath structure)`
+
+Navigates to and returns a sequence of all the elements specified by the path.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation it it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (select [ALL even?] (range 10))
+[0 2 4 6 8]
+=> (select :a {:a 0 :b 1})
+[0]
+=> (select ALL {:a 0 :b 1})
+[[:a 0] [:b 1]]
+```
+
 ## Path Macros
 
 ### declarepath
@@ -19,6 +39,7 @@ Declares a new symbol available to be defined as a path. If the path will requir
 (0 0 2 3 4)
 ```
 
+
 ### defpathedfn
 
 `(defpathedfn name & args)`
@@ -33,19 +54,9 @@ to indicate non-path arguments that should not be factored – note that in orde
 to be inline factorable, these arguments must be statically resolvable (e.g. a 
 top level var).
 
-The syntax is the same as `defn` (optional docstring, etc.).
+The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) for wrapping an existing navigator or [defnav](#defnav) for defining your own custom navigator.
 
 ```clojure
-=> (defpathedfn walk-pred 
-     "Walks to integers satisfying apred." 
-     [^:notpath apred] 
-     (walker #(and (integer? %) (apred %))))
-=> (select (walk-pred even?) [1 [2] [[[3 4]]] [5 [[6]] 7 8]])
-(2 4 6 8)
-=> (transform (walk-pred even?) #(/ % 2) [1 2 [3] [[[4]]] [5 6] [[7 8]]])
-[1 1 [3] [[[2]]] [5 3] [[7 4]]]
-
-
 ;; The implementation of transformed
 (defpathedfn transformed
   "Navigates to a view of the current value by transforming it with the
@@ -262,6 +273,42 @@ See also [nav](#nav)
 (0 2 2 3 4)
 => (transform (nth-elt 1) inc (vec (range 5)))
 [0 2 2 3 4]
+```
+
+### defnavconstructor
+
+`(defnavconstructor name nav-binding params & body)`
+
+Defines a constructor for a previously defined navigator. Allows for arbitrary specification of the arguments of the navigator.
+
+Note that `defnavconstructor` takes an optional docstring and metadata in the same form as `clojure.core/defn`.
+
+`nav-binding` should have the form `[binding navigator]`.
+
+`params` should be a vector of parameters that your navigator will take as arguments.
+
+`body` should be a form that returns a navigator.
+
+```clojure
+;; A constructor for the walker navigator which adds the requirement that the
+;; structure be an integer to walker's afn predicate
+=> (defnavconstructor walk-ints
+     "Arguments passed to this walker's afn must also be integers to return true."
+     [p walker]
+     [apred]
+     (p #(and (integer? %) (apred %))))
+=> (select (walk-ints even?) [1 [[[[2]] 3 4]] 5 [6 7] [[[8]]]])
+(2 4 6 8)
+=> (select (walk-ints #(< % 5)) (range 7))
+(0 1 2 3 4)
+;; A constructor for the pred navigator which takes two predicate functions
+;; as arguments. If either is satisfied, pred will continue navigation.
+=> (defnavconstructor or-pred
+     [p pred]
+     [pred1 pred2]
+     (p #(or (pred1 %) (pred2 %))))
+=> (select [ALL (or-pred even? #(> % 6))] (range 10))
+[0 2 4 6 7 8 9]
 ```
 
 ### nav
