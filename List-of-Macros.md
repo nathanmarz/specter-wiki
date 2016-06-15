@@ -1,5 +1,3 @@
-# List of Macros with Examples
-
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
@@ -34,9 +32,9 @@
 <!-- markdown-toc end -->
 
 
-## Core Macros
+# Core Macros
 
-### replace-in
+## replace-in
 
 `(replace-in apath transform-fn structure & args)`
 
@@ -63,7 +61,7 @@ Note that the `user-ret` portion of the return value of `transform-fn` must be a
 [[3 4 16 5 12] 8]
 ```
 
-### select
+## select
 
 `(select apath structure)`
 
@@ -81,7 +79,7 @@ factor/cache the path.
 [[:a 0] [:b 1]]
 ```
 
-### select-first
+## select-first
 
 `(select-first apath structure)`
 
@@ -98,7 +96,7 @@ factor/cache the path.
 0
 ```
 
-### select-one
+## select-one
 
 `(select-one apath structure)`
 
@@ -117,7 +115,7 @@ factor/cache the path.
 IllegalArgumentException More than one element found for params
 ```
 
-### select-one!
+## select-one!
 
 `(select-one! apath structure)`
 
@@ -137,7 +135,7 @@ IllegalArgumentException Expected exactly one element for params
 IllegalArgumentException Expected exactly one element for params
 ```
 
-### setval
+## setval
 
 `(setval apath aval structure)`
 
@@ -151,7 +149,7 @@ factor/cache the path.
 (:even 1 :even 3 :even 5 :even 7 :even 9)
 ```
 
-### transform
+## transform
 
 `(transform apath transform-fn structure)`
 
@@ -175,9 +173,9 @@ Note that `transform` takes as its initial arguments any collected values. Its l
 {:a {:key :a, :val 0}, :b {:key :b, :val 1}}
 ```
 
-## Path Macros
+# Path Macros
 
-### declarepath
+## declarepath
 
 `(declarepath name)`
 
@@ -195,7 +193,7 @@ Declares a new symbol available to be defined as a path. If the path will requir
 ```
 
 
-### defpathedfn
+## defpathedfn
 
 `(defpathedfn name & args)`
 
@@ -229,7 +227,7 @@ The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathe
       (next-fn (compiled-transform late update-fn structure)))))
 ```
 
-### defprotocolpath
+## defprotocolpath
 
 `(defprotocolpath name)`
 
@@ -264,7 +262,7 @@ Currently not available for ClojureScript.
 [99 2 14 11]
 ```
 
-### extend-protocolpath
+## extend-protocolpath
 
 `(extend-protocolpath protpath & extensions)`
 
@@ -272,7 +270,7 @@ Extends a protocol path `protpath` to a list of types. The `extensions` argument
 
 See [defprotocolpath](#defprotocolpath) for an example.
 
-### fixed-pathed-nav
+## fixed-pathed-nav
 
 `(fixed-pathed-nav bindings select-impl transform-impl)`
 
@@ -293,7 +291,7 @@ are required, then the result is executable.
 
 See [defpathedfn](#defpathedfn) for an example.
 
-### path
+## path
 
 `(path & path)`
 
@@ -305,13 +303,13 @@ select/transform/setval/replace-in/etc. macros.
 ```clojure
 ```
 
-### providepath
+## providepath
 
 `(providepath name apath)`
 
 Defines the path that will be associated to the provided name. The name must have been previously declared using [declarepath](#declarepath).
 
-### variable-pathed-nav
+## variable-pathed-nav
 
 `(variable-pathed-nav [paths-binding paths-seq] select-impl transform-impl)`
 
@@ -347,9 +345,9 @@ The implementation of `multi-path` is a nice example of the use of `variable-pat
         compiled-paths))))
 ```
 
-## Collector Macros
+# Collector Macros
 
-### defcollector
+## defcollector
 
 `(defcollector name params collect-val-impl)`
 
@@ -369,7 +367,7 @@ An informative example is the actual implementation of `putval`, which follows.
 (3 4 5 6 7)
 ```
 
-### paramscollector
+## paramscollector
 
 `(paramscollector params collect-val-impl)`
 
@@ -380,7 +378,7 @@ that needed parameters (in the order in which they were declared).
 
 Returns an "anonymous Collector." See [defcollector](#defcollector).
 
-### pathed-collector
+## pathed-collector
 
 `(pathed-collector [name path] collect-val-impl)`
 
@@ -402,9 +400,9 @@ The implementation of `collect` is a good example of how `pathed-collector` can 
       (compiled-select late structure))))
 ```
 
-## Navigator Macros
+# Navigator Macros
 
-### defnav
+## defnav
 
 `(defnav name params select-impl transform-impl)`
 
@@ -442,7 +440,7 @@ See also [nav](#nav)
 [0 2 2 3 4]
 ```
 
-### defnavconstructor
+## defnavconstructor
 
 `(defnavconstructor name nav-binding params & body)`
 
@@ -478,7 +476,7 @@ Note that `defnavconstructor` takes an optional docstring and metadata in the sa
 [0 2 4 6 7 8 9]
 ```
 
-### nav
+## nav
 
 `(nav params select-impl transform-impl)`
 
@@ -486,7 +484,7 @@ Note that `defnavconstructor` takes an optional docstring and metadata in the sa
 
 Returns an "anonymous navigator." See [defnav](#defnav).
 
-### paramsfn
+## paramsfn
 
 `(paramsfn params [structure-binding] impl)`
 
