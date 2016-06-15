@@ -1,5 +1,39 @@
 # List of Macros with Examples
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+**Table of Contents**
+
+- [List of Macros with Examples](#list-of-macros-with-examples)
+    - [Core Macros](#core-macros)
+        - [replace-in](#replace-in)
+        - [select](#select)
+        - [select-first](#select-first)
+        - [select-one](#select-one)
+        - [select-one!](#select-one)
+        - [setval](#setval)
+        - [transform](#transform)
+    - [Path Macros](#path-macros)
+        - [declarepath](#declarepath)
+        - [defpathedfn](#defpathedfn)
+        - [defprotocolpath](#defprotocolpath)
+        - [extend-protocolpath](#extend-protocolpath)
+        - [fixed-pathed-nav](#fixed-pathed-nav)
+        - [path](#path)
+        - [providepath](#providepath)
+        - [variable-pathed-nav](#variable-pathed-nav)
+    - [Collector Macros](#collector-macros)
+        - [defcollector](#defcollector)
+        - [paramscollector](#paramscollector)
+        - [pathed-collector](#pathed-collector)
+    - [Navigator Macros](#navigator-macros)
+        - [defnav](#defnav)
+        - [defnavconstructor](#defnavconstructor)
+        - [nav](#nav)
+        - [paramsfn](#paramsfn)
+
+<!-- markdown-toc end -->
+
+
 ## Core Macros
 
 ### replace-in
@@ -258,6 +292,18 @@ are required, then the result is executable.
 `transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever subcollection of `structure` this navigator selects. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
 
 See [defpathedfn](#defpathedfn) for an example.
+
+### path
+
+`(path & path)`
+
+Same as calling comp-paths, except it caches the composition of the static part
+of the path for later re-use (when possible). For almost all idiomatic uses
+of Specter provides huge speedup. This macro is automatically used by the
+select/transform/setval/replace-in/etc. macros.
+
+```clojure
+```
 
 ### providepath
 
