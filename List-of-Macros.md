@@ -2,13 +2,17 @@
 **Table of Contents**
 
 - [Core Macros](#core-macros)
+    - [collected?](#collected)
     - [replace-in](#replace-in)
     - [select](#select)
+    - [select-any](#select-any)
+    - [selected-any?](#selected-any)
     - [select-first](#select-first)
     - [select-one](#select-one)
     - [select-one!](#select-one)
     - [setval](#setval)
     - [transform](#transform)
+    - [traverse](#traverse)
 - [Path Macros](#path-macros)
     - [declarepath](#declarepath)
     - [defpathedfn](#defpathedfn)
