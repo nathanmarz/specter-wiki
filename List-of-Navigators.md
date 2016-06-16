@@ -1,24 +1,58 @@
-# List of Navigators with Examples
-
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
 
-[ALL](#all) [ATOM](#atom) [BEGINNING](#beginning) [END](#end) [FIRST](#first) [LAST](#last)
-[MAP-VALS](#map-vals) [NIL->LIST](#nil-list) [NIL->SET](#nil-set) [NIL->VECTOR](#nil-vector)
-[STAY](#stay) [STOP](#stop) [VAL](#val)
+**Table of Contents**
 
-[codewalker](#codewalker) [collect](#collect) [collect-one](collect-one) [comp-paths](#comp-paths)
-[compiled-replace-in](#compiled-*) [compiled-select](#compiled-*) [compiled-select-first](#compiled-*)
-[compiled-select-one](#compiled-*) [compiled-select-one!](#compiled-*) [compiled-setval](#compiled-*)
-[compiled-transform](#compiled-*) [cond-path](#cond-path) [continue-then-stay](#continue-then-stay)
-[continuous-subseqs](#continuous-subseqs) [filterer](#filterer) [if-path](#if-path)
-[keypath](#keypath) [multi-path](#multi-path) [must](#must) [nil->val](#nil-val) [params-reset](#params-reset)
-[parser](#parser) [pred](#pred) [putval](#putval) [not-selected?](#not-selected) 
-[selected?](#selected) [srange](#srange) [srange-dynamic](#srange-dynamic)
-[stay-then-continue](#stay-then-continue) [submap](#submap) [subselect](#subselect) [subset](#subset)
-[transformed](#transformed) [view](#view) [walker](#walker)
-## Unparameterized Navigators
+- [Unparameterized Navigators](#unparameterized-navigators)
+    - [ALL](#all)
+    - [ATOM](#atom)
+    - [BEGINNING](#beginning)
+    - [END](#end)
+    - [FIRST](#first)
+    - [LAST](#last)
+    - [MAP-VALS](#map-vals)
+    - [NIL->LIST](#nil-list)
+    - [NIL->SET](#nil-set)
+    - [NIL->VECTOR](#nil-vector)
+    - [STAY](#stay)
+    - [STOP](#stop)
+    - [VAL](#val)
+- [Parameterized Navigators (and Functions)](#parameterized-navigators-and-functions)
+    - [codewalker](#codewalker)
+    - [collect](#collect)
+    - [collect-one](#collect-one)
+    - [comp-paths](#comp-paths)
+    - [compiled-*](#compiled-)
+    - [cond-path](#cond-path)
+    - [continue-then-stay](#continue-then-stay)
+    - [continuous-subseqs](#continuous-subseqs)
+    - [filterer](#filterer)
+    - [if-path](#if-path)
+    - [keypath](#keypath)
+    - [multi-path](#multi-path)
+    - [must](#must)
+    - [nil->val](#nil-val)
+    - [params-reset](#params-reset)
+    - [parser](#parser)
+    - [pred](#pred)
+    - [putval](#putval)
+    - [not-selected?](#not-selected)
+    - [selected?](#selected)
+    - [srange](#srange)
+    - [srange-dynamic](#srange-dynamic)
+    - [stay-then-continue](#stay-then-continue)
+    - [submap](#submap)
+    - [subselect](#subselect)
+    - [subset](#subset)
+    - [transformed](#transformed)
+    - [view](#view)
+    - [walker](#walker)
 
-### ALL
+<!-- markdown-toc end -->
+
+
+# Unparameterized Navigators
+
+## ALL
 
 `ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
 
@@ -33,7 +67,7 @@
 {:a :b, :c :d}
 ```
 
-### ATOM
+## ATOM
 
 `ATOM` navigates to the value of an atom.
 
@@ -49,7 +83,7 @@
 2
 ```
 
-### BEGINNING
+## BEGINNING
 
 `BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence.
 
@@ -66,7 +100,20 @@
 ([:foo :baz] [:foo :bar])
 ```
 
-### END
+## DISPENSE
+
+_Added in 0.12.0_
+
+Drops all collected values for subsequent navigation.
+
+```clojure
+=> (transform [ALL VAL] + (range 10))
+(0 2 4 6 8 10 12 14 16 18)
+=> (transform [ALL VAL DISPENSE] + (range 10))
+(0 1 2 3 4 5 6 7 8 9)
+```
+
+## END
 
 `END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. 
 
@@ -83,7 +130,7 @@
 ([:foo :bar] [:foo :baz])
 ```
 
-### FIRST
+## FIRST
 
 `FIRST` navigates to the first element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
 
@@ -100,7 +147,7 @@ nil
 nil
 ```
 
-### LAST
+## LAST
 
 `LAST` navigates to the last element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
 
@@ -117,7 +164,7 @@ nil
 nil
 ```
 
-### MAP-VALS
+## MAP-VALS
 
 `MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`.
 
@@ -128,7 +175,22 @@ nil
 (:c :f)
 ```
 
-### NIL->LIST
+## META
+
+_Added in 0.12.0_
+
+Navigates to the metadata of the structure, or nil if
+the structure has no metadata or may not contain metadata.
+
+```clojure
+=> (select-one META (with-meta {:a 0} {:meta :data}))
+{:meta :data}
+=> (meta (transform META #(assoc % :meta :datum) 
+           (with-meta {:a 0} {:meta :data})))
+{:meta :datum}
+```
+
+## NIL->LIST
 
 `NIL->LIST` navigates to the empty list `'()` if the value is nil. Otherwise it stays at the current value.
 
@@ -139,7 +201,7 @@ nil
 :foo
 ```
 
-### NIL->SET
+## NIL->SET
 
 `NIL->SET` navigates to the empty set `#{}` if the value is nil. Otherwise it stays at the current value.
 
@@ -150,7 +212,7 @@ nil
 :foo
 ```
 
-### NIL->VECTOR
+## NIL->VECTOR
 
 `NIL->VECTOR` navigates to the empty vector `[]` if the value is nil. Otherwise it stays at the current value.
 
@@ -161,7 +223,7 @@ nil
 :foo
 ```
 
-### STAY
+## STAY
 
 `STAY` stays in place. It is the no-op navigator.
 
@@ -170,7 +232,7 @@ nil
 :foo
 ```
 
-### STOP
+## STOP
 
 `STOP` stops navigation. For transformation, returns the structure unchanged.
 
@@ -183,7 +245,7 @@ nil
 (0 1 2 3 4)
 ```
 
-### VAL
+## VAL
 
 Collects the current structure.
 
@@ -197,9 +259,9 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 (5 6 7 8 9)
 ```
 
-## Parameterized Navigators (and Functions)
+# Parameterized Navigators (and Functions)
 
-### codewalker
+## codewalker
 
 `(codewalker afn)`
 
@@ -218,7 +280,7 @@ See also [walker](#walker).
 ({:foo :bar})
 ```
 
-### collect
+## collect
 
 `(collect & paths)`
 
@@ -243,7 +305,7 @@ See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 ([0 1 2] 1 2)
 ```
 
-### collect-one
+## collect-one
 
 `(collect-one & paths)`
 
@@ -262,7 +324,7 @@ See also [VAL](#val), [collect](#collect), and [putval](#putval)
 {:a 105,, :b 5 :c 7}
 ```
 
-### comp-paths
+## comp-paths
 
 `(comp-paths & path)`
 
@@ -281,11 +343,11 @@ path will require parameters for all such navigators in the order in which they 
 [1 2 3]
 ```
 
-### compiled-*
+## compiled-*
 
 These functions operate in the same way as their uncompiled counterparts, but they require their path to be precompiled with [comp-paths](#comp-paths).
 
-### cond-path
+## cond-path
 
 `(cond-path & conds)`
 
@@ -308,7 +370,7 @@ See also [if-path](#if-path)
 ()
 ```
 
-### continue-then-stay
+## continue-then-stay
 
 `(continue-then-stay & path)`
 
@@ -322,7 +384,7 @@ See also [stay-then-continue](#stay-then-continue).
 (0 1 2 {:a 0, :b 1, :c 2})
 ```
 
-### continuous-subseqs
+## continuous-subseqs
 
 `(continuous-subseqs pred)`
 
@@ -337,7 +399,7 @@ Navigates to every continuous subsequence of elements matching `pred`.
 [11 12 20]
 ```
 
-### filterer
+## filterer
 
 `(filterer & path)`
 
@@ -365,7 +427,7 @@ See also [subselect](#subselect).
 ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.lang.IFn
 ```
 
-### if-path
+## if-path
 
 `(if-path cond-path then-path)`
 `(if-path cond-path then-path else-path)`
@@ -386,7 +448,7 @@ See also [if-path](#if-path)
 ()
 ```
 
-### keypath
+## keypath
 
 `(keypath key)`
 
@@ -407,7 +469,7 @@ See also [must](#must)
 [0 :boo]
 ```
 
-### multi-path
+## multi-path
 
 `(multi-path & paths)`
 
@@ -425,7 +487,7 @@ applies updates to the paths in order.
 {:a -1, :b 0, :c 2}
 ```
 
-### must
+## must
 
 `(must key)`
 
@@ -443,7 +505,7 @@ nil
 {:b 1}
 ```
 
-### nil->val
+## nil->val
 
 `(nil->val v)`
 
@@ -457,7 +519,7 @@ navigated at the structure.
 :b
 ```
 
-### params-reset
+## params-reset
 
 `(params-reset params-path)`
 
@@ -478,7 +540,7 @@ Instructs the provided navigator to backtrack in the params array by the number 
 ({:a {:a {:b 2}}} {:a {:b 2}} {:b 2})
 ```
 
-### parser
+## parser
 
 `(parser parse-fn unparse-fn)`
 
@@ -498,7 +560,7 @@ it to get the final value at this point.
 ["test@example.com" "test+spam@gmail.com"]
 ```
 
-### pred
+## pred
 
 `(pred apred)`
 
@@ -515,7 +577,7 @@ See also [must](#must).
 [0 2 4 6 8]
 ```
 
-### putval
+## putval
 
 `(putval val)`
 
@@ -531,7 +593,7 @@ See also [VAL](#val), [collect](#collect), and [collect-one](#collect-one)
 {:a {:b 3}}
 ```
 
-### not-selected?
+## not-selected?
 
 `(not-selected? & path)`
 
@@ -553,7 +615,7 @@ See also [selected?](#selected?).
 nil
 ```
 
-### selected?
+## selected?
 
 `(selected? & path)`
 
@@ -576,7 +638,7 @@ See also [not-selected?](#not-selected?).
 nil
 ```
 
-### srange
+## srange
 
 `(srange start end)`
 
@@ -594,7 +656,7 @@ IndexOutOfBoundsException
 (0 1 4)
 ```
 
-### srange-dynamic
+## srange-dynamic
 
 `(srange-dynamic start-fn end-fn)`
 
@@ -610,7 +672,7 @@ See also [srange](#srange).
 [0 1 2 3 4]
 ```
 
-### stay-then-continue
+## stay-then-continue
 
 `(stay-then-continue)`
 
@@ -624,7 +686,7 @@ See also [continue-then-stay](#continue-then-stay).
 ({:a 0, :b 1, :c 2} 0 1 2)
 ```
 
-### submap
+## submap
 
 `(submap m-keys)`
 
@@ -648,7 +710,7 @@ value of the submap.
 {:a 0, :b 1, :c 2}
 ```
 
-### subselect
+## subselect
 
 `(subselect & path)`
 
@@ -670,7 +732,7 @@ See also [filterer](#filterer).
 [1 [[[10]] 3] 5 [8 [7 6]] 2]
 ```
 
-### subset
+## subset
 
 `(subset aset)`
 
@@ -687,7 +749,7 @@ new value of the subset.
 #{:c :b :a}
 ```
 
-### transformed
+## transformed
 
 `(transformed path update-fn)`
 
@@ -707,7 +769,7 @@ See also [view](#view)
 (0 1 1 3 2 5 3 7 4 9)
 ```
 
-### view
+## view
 
 `(view afn)`
 
@@ -720,7 +782,7 @@ See also [transformed](#transformed).
 1
 ```
 
-### walker
+## walker
 
 `(walker afn)`
 

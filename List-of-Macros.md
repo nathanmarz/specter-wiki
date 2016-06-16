@@ -2,13 +2,17 @@
 **Table of Contents**
 
 - [Core Macros](#core-macros)
+    - [collected?](#collected)
     - [replace-in](#replace-in)
     - [select](#select)
+    - [select-any](#select-any)
+    - [selected-any?](#selected-any)
     - [select-first](#select-first)
     - [select-one](#select-one)
     - [select-one!](#select-one)
     - [setval](#setval)
     - [transform](#transform)
+    - [traverse](#traverse)
 - [Path Macros](#path-macros)
     - [declarepath](#declarepath)
     - [defpathedfn](#defpathedfn)
@@ -32,6 +36,31 @@
 
 
 # Core Macros
+
+## collected?
+
+`(collected? params & body)`
+
+_Added in 0.12.0_
+
+Creates a filter function navigator that takes in all the collected values
+as input. For arguments, can use `(collected? [a b] ...)` syntax to look
+at each collected value as individual arguments, or `(collected? v ...)` syntax
+to capture all the collected values as a single vector.
+
+`collected?` operates in the same fashion as [pred](List-of-Navigators#pred), but it takes the collected values as its arguments rather than the structure.
+
+```clojure
+=> (select [ALL (collect-one FIRST) LAST (collected? [k] (= k :a))] {:a 0 :b 1})
+[[:a 0]]
+=> (select [ALL (collect-one FIRST) LAST (collected? [k] (< k 2))] 
+     (zipmap (range 5) ["a" "b" "c" "d" "e"]))
+[[0 "a"] [1 "b"]]
+=> (transform [ALL (collect-one FIRST) LAST (collected? [k] (< k 2)) DISPENSE]
+              string/upper-case 
+              (zipmap (range 5) ["a" "b" "c" "d" "e"]))
+{0 "A", 1 "B", 2 "c", 3 "d", 4 "e"}
+```
 
 ## replace-in
 
@@ -76,6 +105,49 @@ factor/cache the path.
 [0]
 => (select ALL {:a 0 :b 1})
 [[:a 0] [:b 1]]
+```
+
+## select-any
+
+`(select-any apath structure)`
+
+_Added in 0.12.0_
+
+Returns any element found or `com.rpl.specter/NONE` if nothing selected. This is the most
+efficient of the various selection operations.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation if it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (select-any STAY :a)
+:a
+=> (select-any even? 3)
+:com.rpl.specter.impl/NONE ; Implementation detail
+=> (= com.rpl.specter/NONE :com.rpl.specter.impl/NONE)
+true
+```
+
+## selected-any?
+
+`(selected-any? apath structure)`
+
+_Added in 0.12.0_
+
+Returns true if any element was selected, false otherwise.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation if it's not possible to 
+factor/cache the path.
+
+```clojure
+=> (selected-any? STAY :a)
+true
+=> (selected-any? even? 3)
+false
+=> (selected-any? ALL (range 10))
+true
+=> (selected-any? ALL [])
+false
 ```
 
 ## select-first
@@ -170,6 +242,29 @@ Note that `transform` takes as its initial arguments any collected values. Its l
 [[[[1] 4]] 3 8 [5 12] [7 [[16]]]]
 => (transform [ALL] (fn [[k v]] [k {:key k :val v}]) {:a 0 :b 1})
 {:a {:key :a, :val 0}, :b {:key :b, :val 1}}
+```
+
+## traverse
+
+`(traverse apath structure)`
+
+_Added in 0.12.0_
+
+Return a reducible object that traverses over `structure` to every element
+specified by the path.
+This macro will attempt to do inline factoring and caching of the path, falling
+back to compiling the path on every invocation if it's not possible to 
+factor/cache the path.
+
+`(reduce afn init (traverse apath structure))` will always return the same thing as `(reduce afn init (select apath structure))`, but more efficiently. The return value of `traverse` is only useful as an argument to `reduce`; for all other uses, prefer [select](#select).
+
+```clojure
+=> (reduce + 0 (traverse ALL (range 10)))
+45
+=> (reduce + 0 (traverse (walker integer?) [[[1 2]] 3 [4 [[5 6 7]] 8] 9]))
+45
+=> (traverse (walker integer?) [[[1 2]] 3 [4 [[5 6 7]] 8] 9])
+;; returns object implementing clojure.lang.IReduce
 ```
 
 # Path Macros
@@ -303,7 +398,7 @@ The arguments to `path` cannot include local symbols (defined in a `let`), dynam
 
 Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime. `path` cannot be passed late bound parameters.
 
-**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically calls `path` on its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`. You can find a more detailed discussion of inline caching [here](https://github.com/nathanmarz/specter/wiki/Specter-0.11.0:-Performance-without-the-tradeoffs).
+**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically applies `path` to its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`. You can find a more detailed discussion of inline caching [here](https://github.com/nathanmarz/specter/wiki/Specter-0.11.0:-Performance-without-the-tradeoffs).
 
 ```clojure
 => (def p (path even?))
