@@ -1,15 +1,18 @@
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
 - [Unparameterized Navigators](#unparameterized-navigators)
     - [ALL](#all)
     - [ATOM](#atom)
     - [BEGINNING](#beginning)
+    - [DISPENSE](#dispense)
     - [END](#end)
     - [FIRST](#first)
     - [LAST](#last)
     - [MAP-VALS](#map-vals)
+    - [META](#meta)
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
