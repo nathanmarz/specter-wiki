@@ -287,7 +287,7 @@ See also [walker](#walker).
 
 `(collect & paths)`
 
-`collect` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
+`collect` adds the result of running `select` with the given path on the current value to the collected vals. Note that `collect`, like `select`, returns a vector containing its results. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
 
 See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 
@@ -312,7 +312,7 @@ See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 
 `(collect-one & paths)`
 
-`collect-one` adds the result of running `collect` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
+`collect-one` adds the result of running `select-one` with the given path on the current value to the collected vals. Note that `collect-one`, like `select-one`, returns a single result. If there is more than one result, an exception will be thrown. If `transform` is called, each collected value will be passed as an argument to the transforming function with the resulting value as the last argument.
 
 See also [VAL](#val), [collect](#collect), and [putval](#putval)
 
