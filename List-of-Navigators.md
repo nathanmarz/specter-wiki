@@ -209,9 +209,9 @@ the structure has no metadata or may not contain metadata.
 `NIL->SET` navigates to the empty set `#{}` if the value is nil. Otherwise it stays at the current value.
 
 ```clojure
-=> (select-one NIL->LIST nil)
+=> (select-one NIL->SET nil)
 #{}
-=> (select-one NIL->LIST :foo)
+=> (select-one NIL->SET :foo)
 :foo
 ```
 
@@ -220,9 +220,9 @@ the structure has no metadata or may not contain metadata.
 `NIL->VECTOR` navigates to the empty vector `[]` if the value is nil. Otherwise it stays at the current value.
 
 ```clojure
-=> (select-one NIL->LIST nil)
+=> (select-one NIL->VECTOR nil)
 []
-=> (select-one NIL->LIST :foo)
+=> (select-one NIL->VECTOR :foo)
 :foo
 ```
 
