@@ -277,7 +277,7 @@ factor/cache the path.
 
 `(declarepath name params)`
 
-Declares a new symbol available to be defined as a path. If the path will require parameters, these must be specified here. The path itself must be defined using [providepath](#providepath).
+Declares a new symbol available to be defined as a path. If the path will require parameters, these must be specified here. The path itself must be defined using [providepath](#providepath). `declarepath` and `providepath` are great for defining recursive navigators, as seen in the second example below.
 
 ```clojure
 => (declarepath SECOND)
@@ -286,6 +286,12 @@ Declares a new symbol available to be defined as a path. If the path will requir
 1
 => (transform SECOND dec (range 5))
 (0 0 2 3 4)
+=> (declarepath DEEP-MAP-VALS)
+=> (providepath DEEP-MAP-VALS (if-path map? [MAP-VALS DEEP-MAP-VALS] STAY))
+=> (select DEEP-MAP-VALS {:a {:b 2} :c {:d 3 :e {:f 4}} :g 5})
+[2 3 4 5]
+=> (transform DEEP-MAP-VALS inc {:a {:b 2} :c {:d 3 :e {:f 4}} :g 5})
+{:a {:b 3}, :c {:d 4, :e {:f 5}}, :g 6}
 ```
 
 
