@@ -3,6 +3,7 @@
 
 - [Core Macros](#core-macros)
     - [collected?](#collected)
+    - [multi-transform](#multi-transform)
     - [replace-in](#replace-in)
     - [select](#select)
     - [select-any](#select-any)
@@ -61,6 +62,31 @@ to capture all the collected values as a single vector.
               (zipmap (range 5) ["a" "b" "c" "d" "e"]))
 {0 "A", 1 "B", 2 "c", 3 "d", 4 "e"}
 ```
+
+## multi-transform
+
+`(multi-transform path structure)`
+
+_Added in 0.12.0_
+
+Just like `transform` but expects transform functions to be specified inline in
+the path using `terminal`. Error is thrown if navigation finishes at a
+non-`terminal` navigator. `terminal-val` is a wrapper around `terminal` and is
+the `multi-transform` equivalent of `setval`. Much more efficient than doing the
+transformations with `transform` one after another when the transformations
+share a lot of navigation. This macro will attempt to do inline factoring and
+caching of the path, falling back to compiling the path on every invocation if
+it's not possible to factor/cache the path.
+
+```clojure
+(multi-transform [:a :b (multi-path [:c (terminal-val :done)]
+                                    [:d (terminal inc)]
+                                    [:e (putval 3) (terminal +)])]
+                 {:a {:b {:c :working :d 0 :e 1.5}}})
+{:a {:b {:c :done, :d 1, :e 4.5}}}
+```
+
+See also [terminal](#List-of-Navigators#terminal) and [terminal-val](#List-of-Navigators#terminal-val).
 
 ## replace-in
 

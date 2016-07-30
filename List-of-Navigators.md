@@ -1,5 +1,4 @@
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
-
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
@@ -46,11 +45,14 @@
     - [submap](#submap)
     - [subselect](#subselect)
     - [subset](#subset)
+    - [terminal](#terminal)
+    - [terminal-val](#terminal-val)
     - [transformed](#transformed)
     - [view](#view)
     - [walker](#walker)
 
 <!-- markdown-toc end -->
+
 
 
 # Unparameterized Navigators
@@ -751,6 +753,44 @@ new value of the subset.
 => (setval (subset #{:a}) #{:a :c} #{:a :b})
 #{:c :b :a}
 ```
+
+## terminal
+
+`(terminal update-fn)`
+
+_Added in 0.12.0_
+
+For usage with `multi-transform`, defines an endpoint in the navigation that
+will have the parameterized transform function run. The transform function works
+just like it does in `transform`, with collected values given as the first
+arguments.
+
+See also [terminal-val](#terminal-val) and [multi-transform](#List-of-Macros#multi-transform).
+
+```clojure
+=> (multi-transform [(putval 3) (terminal +)] 1)
+4
+=> (multi-transform [:a :b (multi-path [:c (terminal inc)] 
+                                       [:d (putval 3) (terminal +)])]
+                    {:a {:b {:c 42 :d 1}}})
+{:a {:b {:c 43, :d 4}}}
+```
+
+## terminal-val
+
+`(terminal-val val)`
+
+_Added in 0.12.0_
+
+Like `terminal` but specifies a val to set at the location regardless of
+the collected values or the value at the location.
+
+```clojure
+=> (multi-transform (terminal-val 2) 3)
+2
+```
+
+See also [terminal](#terminal) and [multi-transform](#List-of-Macros#multi-transform).
 
 ## transformed
 
