@@ -86,7 +86,7 @@ it's not possible to factor/cache the path.
 {:a {:b {:c :done, :d 1, :e 4.5}}}
 ```
 
-See also [terminal](#List-of-Navigators#terminal) and [terminal-val](#List-of-Navigators#terminal-val).
+See also [terminal](List-of-Navigators#terminal) and [terminal-val](List-of-Navigators#terminal-val).
 
 ## replace-in
 

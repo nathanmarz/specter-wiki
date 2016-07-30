@@ -765,7 +765,7 @@ will have the parameterized transform function run. The transform function works
 just like it does in `transform`, with collected values given as the first
 arguments.
 
-See also [terminal-val](#terminal-val) and [multi-transform](#List-of-Macros#multi-transform).
+See also [terminal-val](#terminal-val) and [multi-transform](List-of-Macros#multi-transform).
 
 ```clojure
 => (multi-transform [(putval 3) (terminal +)] 1)
@@ -790,7 +790,7 @@ the collected values or the value at the location.
 2
 ```
 
-See also [terminal](#terminal) and [multi-transform](#List-of-Macros#multi-transform).
+See also [terminal](#terminal) and [multi-transform](List-of-Macros#multi-transform).
 
 ## transformed
 
