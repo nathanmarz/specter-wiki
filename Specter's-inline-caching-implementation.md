@@ -6,6 +6,7 @@ The rewrite greatly simplifies the implementation (codebase is 20% smaller) whil
 
 - Paths can now contain dynamic vars and special forms, e.g. `[*dynamic-nav* (if some-condition? (keypath a) ALL)]`. These paths still undergo inline compilation and caching and will run with great performance.
 - Performance with dynamic parameters is greatly improved. A path like `[(keypath a) (keypath b) (keypath c)]` runs more than 40% faster.
+- Writing navigators or higher-order navigators is much simpler now. 
 
 
 ## Old inline caching implementation
