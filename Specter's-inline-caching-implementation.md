@@ -4,7 +4,7 @@ The main reason for rewriting Specter's internals was because the old implementa
 
 The rewrite greatly simplifies the implementation (codebase is 20% smaller) while bringing the following additional benefits:
 
-- Paths can now contain dynamic vars and special forms, e.g. `[*dynamiv-nav* (if some-condition? (keypath a) ALL)]`. These paths still undergo inline compilation and caching and will run with great performance.
+- Paths can now contain dynamic vars and special forms, e.g. `[*dynamic-nav* (if some-condition? (keypath a) ALL)]`. These paths still undergo inline compilation and caching and will run with great performance.
 - Performance with dynamic parameters is greatly improved. A path like `[(keypath a) (keypath b) (keypath c)]` runs more than 40% faster.
 
 
