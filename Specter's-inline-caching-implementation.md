@@ -64,13 +64,13 @@ The first example shows how sequential static navigators get precompiled togethe
 
 The last example shows what Specter does when it has a local variable in the position of a navigator. Since Specter does not know if `b` is an implementation of `RichNavigator`, it cannot put it into a `comp-navs` call directly. `b` could be an implicit navigator like `:some-keyword`, or it could be an uncompiled path like `[ALL even?]`. So it inserts the call to `coerce-nav` to determine that at runtime. If you know for sure a symbol or form will create a `RichNavigator` object, then you can annotate it with metadata like this:
 
-```
+```clojure
 [:a ^:direct-nav b :c] => (comp-navs <ANON> b <ANON>)
 ```
 
 The same thing works for dynamic var references and special forms:
 
-```
+```clojure
 [*a-dynamic-var*] => (coerce-nav *a-dynamic-*var)
 
 [^:direct-nav *a-dynamic-var*] => *a-dynamic-*var
