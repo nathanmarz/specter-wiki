@@ -40,7 +40,7 @@ With all the ins and outs of doing inline caching now being understood, it turns
 
 The goal of inline caching is to do as much work ahead of time so the work to finish compilation at runtime (like parameterizing with local variables) is extremely fast. The prior design reduced the runtime work to a single operation: creating an array and filling it with dynamic params. However, "one runtime operation" is not a hard constraint. It's fine to have more operations as long as they are all fast.
 
-With new new inline caching implementation, the `foo` example from before compiles to this:
+The end result of compilation is a single object implementing the `RichNavigator` interface that encapsulates all the navigation done by the path. With new new inline caching implementation, the `foo` example from before compiles to this:
 
 ```clojure
 (defn foo [a data]
