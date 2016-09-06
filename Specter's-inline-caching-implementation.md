@@ -34,7 +34,7 @@ In prior versions of Specter, the solution was to enable paths to be compiled *w
 
 At the time this made a lot of sense. The precompilation without parameters design was done before the inline caching technique was even a viable concept. So it was natural to first find an elegant way to get the performance manually, and then to build upon that for the first inline caching implementation.
 
-With all the ins and outs of doing inline caching now being understood, it turns out there a better way for Specter to work by further leveraging the flexibility of inline compilation.
+With all the ins and outs of doing inline caching now being understood, it turns out there a better way for Specter to work by further exploiting the potential of inline compilation.
 
 ## New inline caching implementation
 
