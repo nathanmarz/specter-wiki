@@ -505,9 +505,6 @@ See also [keypath](#keypath) and [pred](#pred).
 0
 => (select-one (must :a) {:b 1})
 nil
-;; Only follows one key
-=> (select-one (must :a :b) {:a {:b 1}})
-{:b 1}
 ```
 
 ## nil->val
