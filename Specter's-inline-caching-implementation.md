@@ -72,9 +72,9 @@ The last example shows what Specter does when it has a local variable in the pos
 The same thing works for dynamic var references and special forms:
 
 ```clojure
-[*a-dynamic-var*] => (coerce-nav *a-dynamic-*var)
+[*a-dynamic-var*] => (coerce-nav *a-dynamic-var*)
 
-[^:direct-nav *a-dynamic-var*] => *a-dynamic-*var
+[^:direct-nav *a-dynamic-var*] => *a-dynamic-var*
 
 [:a (if c (keypath a) STAY)] => (comp-navs <ANON> (coerce-nav (if c (keypath a) STAY)))
 
@@ -83,7 +83,7 @@ The same thing works for dynamic var references and special forms:
 
 ## Dynamic navigators
 
-There are two more additional use cases that Specter must handle, both of which are illustated by the `selected?` navigator. Consider these two uses of `selected?`:
+There are two more additional use cases that Specter must handle, both of which are illustrated by the `selected?` navigator. Consider these two uses of `selected?`:
 
 ```clojure
 (selected? (keypath a) even?)
