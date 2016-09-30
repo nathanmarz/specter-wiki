@@ -333,8 +333,7 @@ See also [VAL](#val), [collect](#collect), and [putval](#putval)
 
 `(comp-paths & path)`
 
-Returns a compiled version of the given path for use with compiled-{select/transform/setval/etc.} functions. This can compile navigators (defined with `defnav`) without their parameters, and the resulting compiled
-path will require parameters for all such navigators in the order in which they were declared. Precompiling a path and using the corresponding compiled `select` or `transform` operation will provide a slight speed improvement (2-3%) over relying on inline factoring and caching.
+Returns a compiled version of the given path for use with compiled-{select/transform/setval/etc.} functions.
 
 ```clojure
 => (let [my-path (comp-paths :a :b :c)]
