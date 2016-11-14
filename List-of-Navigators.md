@@ -368,7 +368,7 @@ were declared.
 See also [if-path](#if-path)
 
 ```clojure
-=> (select [ALL (cond-path (must :a) :a (must :b) :c)] [{:a 0} {:b 1} {:c 2}])
+=> (select [ALL (cond-path (must :a) :a (must :b) :c)] [{:a 0} {:b 1 :c 2}])
 [0 2]
 => (select [(cond-path (must :a) :b)] {:b 1})
 ()
