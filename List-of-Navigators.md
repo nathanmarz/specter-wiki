@@ -466,7 +466,7 @@ See also [must](#must)
 ;; Only one key allowed
 => (select-one (keypath :a :b) {:a {:b 1}})
 {:b 1}
-=> (select [ALL (keypath :a) [{:a 0} {:b 1}])
+=> (select [ALL (keypath :a)] [{:a 0} {:b 1}])
 [0 nil]
 ;; Does not stop navigation
 => (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
