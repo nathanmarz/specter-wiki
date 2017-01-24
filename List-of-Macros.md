@@ -16,22 +16,15 @@
     - [traverse](#traverse)
 - [Path Macros](#path-macros)
     - [declarepath](#declarepath)
-    - [defpathedfn](#defpathedfn)
     - [defprotocolpath](#defprotocolpath)
     - [extend-protocolpath](#extend-protocolpath)
-    - [fixed-pathed-nav](#fixed-pathed-nav)
     - [path](#path)
     - [providepath](#providepath)
-    - [variable-pathed-nav](#variable-pathed-nav)
 - [Collector Macros](#collector-macros)
     - [defcollector](#defcollector)
-    - [paramscollector](#paramscollector)
-    - [pathed-collector](#pathed-collector)
 - [Navigator Macros](#navigator-macros)
     - [defnav](#defnav)
-    - [defnavconstructor](#defnavconstructor)
     - [nav](#nav)
-    - [paramsfn](#paramsfn)
 
 <!-- markdown-toc end -->
 
@@ -320,41 +313,6 @@ Declares a new symbol available to be defined as a path. If the path will requir
 {:a {:b 3}, :c {:d 4, :e {:f 5}}, :g 6}
 ```
 
-
-## defpathedfn
-
-`(defpathedfn name & args)`
-
-Defines a higher order navigator (a function that returns a navigator) that itself takes in one or more paths
-as input. This macro is generally used in conjunction with [fixed-pathed-nav](#fixed-pathed-nav)
-or [variable-pathed-nav](#variable-pathed-nav). When inline factoring is applied to a path containing
-one of these higher order navigators, it will automatically interepret all 
-arguments as paths, factor them accordingly, and set up the callsite to 
-provide the parameters dynamically. Use `^:notpath` metadata on arguments 
-to indicate non-path arguments that should not be factored – note that in order
-to be inline factorable, these arguments must be statically resolvable (e.g. a 
-top level var).
-
-The syntax is the same as `defn` (optional docstring, etc.). Note that `defpathedfn` should take **paths** as input. For a parameterized navigator which takes non-path arguments, use [defnavconstructor](#defnavconstructor) to wrap an existing navigator, [defnav](#defnav) to define your own custom navigator, or create a path with late bound parameters using `comp-paths`.
-
-```clojure
-;; The implementation of transformed
-(defpathedfn transformed
-  "Navigates to a view of the current value by transforming it with the
-   specified path and update-fn.
-   The input path may be parameterized, in which case the result of transformed
-   will be parameterized in the order of which the parameterized navigators
-   were declared."
-  [path ^:notpath update-fn]
-  ;; Bind the passed in path to late
-  ;; Returns a navigator with the given select* and transform* implementations
-  (fixed-pathed-nav [late path]
-    (select* [this structure next-fn]
-      (next-fn (compiled-transform late update-fn structure)))
-    (transform* [this structure next-fn]
-      (next-fn (compiled-transform late update-fn structure)))))
-```
-
 ## defprotocolpath
 
 `(defprotocolpath name)`
@@ -398,27 +356,6 @@ Extends a protocol path `protpath` to a list of types. The `extensions` argument
 
 See [defprotocolpath](#defprotocolpath) for an example.
 
-## fixed-pathed-nav
-
-`(fixed-pathed-nav bindings select-impl transform-impl)`
-
-`(fixed-pathed-nav bindings transform-impl select-impl)`
-
-The first form is canonical.
-
-This helper is used to define navigators that take in a fixed number of other
-paths as input. Those paths may require late-bound params, so this helper
-will create a parameterized navigator if that is the case. If no late-bound params
-are required, then the result is executable.
-
-`bindings` must be of the form `[path-binding1 path1 path-binding2 path2...]`.
-
-`select-impl` must be of the form `(select* [this structure next-fn] body)`. It should return the result of calling `next-fn` on whatever subcollection of `structure` this navigator selects.
-
-`transform-impl` must be of the form `(transform* [this structure next-fn] body)`. It should find the result of calling `nextfn` on whatever subcollection of `structure` this navigator selects. Then it should return the result of reconstructing the original structure using the results of the `nextfn` call.
-
-See [defpathedfn](#defpathedfn) for an example.
-
 ## path
 
 `(path & path)`
@@ -428,43 +365,12 @@ of the path for later re-use (when possible). For almost all idiomatic uses
 of Specter provides huge speedup. This macro is automatically used by the
 select/transform/setval/replace-in/etc. macros.
 
-The arguments to `path` cannot include local symbols (defined in a `let`), dynamic vars, or special forms (like `if`). In these cases, specter will throw an exception detailing what went wrong.
-
-Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime. `path` cannot be passed late bound parameters.
-
-**Note:** In general, you should prefer using `comp-paths` and `select` over `path` and `compiled-select`. `comp-paths` allows late bound parameters, and `path` does not, so `comp-paths` is more flexible. `select` automatically applies `path` to its path arguments, so you do not lose the speed of inline caching (unless you pass a local symbol, dynamic var, or special form). You can ensure you do not do this by calling `(must-cache-paths!)`. You can find a more detailed discussion of inline caching [here](https://github.com/nathanmarz/specter/wiki/Specter-0.11.0:-Performance-without-the-tradeoffs).
+Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime.
 
 ```clojure
 => (def p (path even?))
 => (select [ALL p] (range 10))
 [0 2 4 6 8]
-
-=> (def p (let [apred even?] (path apred)))
-Failed to cache path: Local symbol apred where navigator expected
-;; Wrap predicate functions in pred to allow caching
-=> (def p (let [apred even?] (path (pred apred)))) ; No exception thrown
-=> (def ^:dynamic *apred*)
-=> (def p (binding [*apred* even?] (path *apred*)))
-Failed to cache path: Var *apred* is dynamic
-=> (def p (path (if true even? odd?)))
-Failed to cache path: Special form (if true even? odd?) where navigator expected
-;; Replace if with if-path
-=> (def p (path (if-path (fn [_] true) even? odd?))) ; No exception thrown
-=> (select [ALL p] (range 10))
-
-=> (def p (path pred))
-Failed to cache path: Var pred is not a navigator
-;; Instead we need to provide pred with its argument, even if the argument
-;; will not be determined until runtime
-=> (defn p [apred] (path ALL (pred apred)))
-;; Use compiled-select because we have precompiled our path
-=> (compiled-select (p odd?) (range 10))
-[1 3 5 7 9]
-
-;; More idiomatic solution of the above
-=> (def p (comp-paths ALL pred))
-=> (select (p odd?) (range 10))
-[1 3 5 7 9]
 ```
 
 ## providepath
@@ -472,42 +378,6 @@ Failed to cache path: Var pred is not a navigator
 `(providepath name apath)`
 
 Defines the path that will be associated to the provided name. The name must have been previously declared using [declarepath](#declarepath).
-
-## variable-pathed-nav
-
-`(variable-pathed-nav [paths-binding paths-seq] select-impl transform-impl)`
-
-`(variable-pathed-nav [paths-binding paths-seq] transform-impl select-impl)`
-
-The first form is canonical.
-
-This helper is used to define navigators that take in a variable number of other
-paths as input. Those paths may require late-bound params, so this helper
-will create a parameterized navigator if that is the case. If no late-bound params
-are required, then the result is executable.
-
-Binds the passed in seq of paths to `paths-binding`, which can be used in `select-impl` and `transform-impl`.
-
-The implementation of `multi-path` is a nice example of the use of `variable-pathed-nav`.
-
-```clojure
-(defpathedfn multi-path [& paths]
-  (variable-pathed-nav [compiled-paths paths]
-    (select* [this structure next-fn]
-      (->> compiled-paths
-           ;; seq with the results of navigating each passed in path
-           (mapcat #(compiled-select % structure))
-           ;; pass each result to the next navigator
-           (mapcat next-fn)
-           doall))
-    (transform* [this structure next-fn]
-      ;; apply the transform to each passed in path in order
-      (reduce
-        (fn [structure path]
-          (compiled-transform path next-fn structure))
-        structure
-        compiled-paths))))
-```
 
 # Collector Macros
 
@@ -529,39 +399,6 @@ An informative example is the actual implementation of `putval`, which follows.
        val))
 => (transform [ALL (putval 3)] + (range 5))
 (3 4 5 6 7)
-```
-
-## paramscollector
-
-`(paramscollector params collect-val-impl)`
-
-Defines a collector with late bound parameters. This collector can be precompiled
-with other selectors without knowing the parameters. When precompiled with other
-selectors, the resulting selector takes in parameters for all selectors in the path
-that needed parameters (in the order in which they were declared).
-
-Returns an "anonymous collector." See [defcollector](#defcollector).
-
-## pathed-collector
-
-`(pathed-collector [path-binding path] collect-val-impl)`
-
-This helper is used to define collectors that take in a single selector
-path as input. That path may require late-bound params, so this helper
-will create a parameterized selector if that is the case. If no late-bound params
-are required, then the result is executable.
-
-Binds the passed in path to `path-binding`.
-
-`collect-val-impl` must be of the form `(collect-val [this structure] body)`. It should return the value to be collected.
-
-The implementation of `collect` is a good example of how `pathed-collector` can be used.
-
-```clojure
-(defpathedfn collect [& path]
-  (pathed-collector [late path]
-    (collect-val [this structure]
-      (compiled-select late structure))))
 ```
 
 # Navigator Macros
@@ -604,43 +441,6 @@ See also [nav](#nav)
 [0 2 2 3 4]
 ```
 
-## defnavconstructor
-
-`(defnavconstructor name nav-binding params & body)`
-
-Defines a constructor for a previously defined navigator. Allows for arbitrary specification of the arguments of the navigator.
-
-Note that `defnavconstructor` takes an optional docstring and metadata in the same form as `clojure.core/defn`.
-
-`nav-binding` should have the form `[binding navigator]`.
-
-`params` should be a vector of parameters that your navigator will take as arguments.
-
-`body` should be a form that returns a navigator.
-
-```clojure
-;; A constructor for the walker navigator which adds the requirement that the
-;; structure be an integer to walker's afn predicate
-=> (defnavconstructor walk-ints
-     "Arguments passed to this walker's predicate must also be integers to
-     return true."
-     [p walker]
-     [apred]
-     (p #(and (integer? %) (apred %))))
-=> (select (walk-ints even?) [1 [[[[2]] 3 4]] 5 [6 7] [[[8]]]])
-(2 4 6 8)
-=> (select (walk-ints #(< % 5)) (range 7))
-(0 1 2 3 4)
-;; A constructor for the pred navigator which takes two predicate functions
-;; as arguments. If either is satisfied, pred will continue navigation.
-=> (defnavconstructor or-pred
-     [p pred]
-     [pred1 pred2]
-     (p #(or (pred1 %) (pred2 %))))
-=> (select [ALL (or-pred even? #(> % 6))] (range 10))
-[0 2 4 6 7 8 9]
-```
-
 ## nav
 
 `(nav params select-impl transform-impl)`
@@ -648,26 +448,3 @@ Note that `defnavconstructor` takes an optional docstring and metadata in the sa
 `(nav params transform-impl select-impl)`
 
 Returns an "anonymous navigator." See [defnav](#defnav).
-
-## paramsfn
-
-`(paramsfn params [structure-binding] impl)`
-
-Helper macro for defining filter functions with late binding parameters.
-
-```clojure
-;; val is the parameter that will be bound at a later time to complete the navigator
-;; x represents the current structure for the navigator
-=> (def less-than-n-pred (comp-paths (paramsfn [val] [x] (< x val))))
-=> (select [ALL (less-than-n-pred 5)] [2 7 3 4 10 8])
-[2 3 4]
-=> (select [ALL (less-than-n-pred 9)] [2 7 3 4 10 8])
-[2 7 3 4 8]
-=> (transform [ALL (less-than-n-pred 9)] inc [2 7 3 4 10 8])
-[3 8 4 5 10 9]
-;; bot and top are late bound parameters
-;; x represents the current structure for the navigator
-=> (def between (comp-paths (paramsfn [bot top] [x] (and (< bot x) (< x top)))))
-=> (select [ALL (between 1 5)] (range 10))
-[2 3 4]
-```
