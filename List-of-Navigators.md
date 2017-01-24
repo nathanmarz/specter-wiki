@@ -33,7 +33,6 @@
     - [multi-path](#multi-path)
     - [must](#must)
     - [nil->val](#nil-val)
-    - [params-reset](#params-reset)
     - [parser](#parser)
     - [pred](#pred)
     - [putval](#putval)
@@ -339,12 +338,6 @@ Returns a compiled version of the given path for use with compiled-{select/trans
 => (let [my-path (comp-paths :a :b :c)]
      (compiled-select-one my-path {:a {:b {:c 0}}}))
 0
-=> (let [param-path (comp-paths :a :b keypath))]
-     (compiled-transform (param-path :c) inc {:a {:b {:c 0, :d 1}}})
-{:a {:b {:c 1, :d 1}}}
-=> (let [range-path (comp-paths srange)]
-     (compiled-select-one (range-path 1 4) (range 4)))
-[1 2 3]
 ```
 
 ## compiled-*
@@ -423,12 +416,6 @@ See also [subselect](#subselect).
 [0 2 4 6 8]
 => (select-one (filterer identity) ['() [] #{} {} "" true false nil])
 [() [] #{} {} "" true]
-=> (let [pred-path (comp-paths (filterer pred))]
-     (select-one (pred-path even?) (range 10)))
-[0 2 4 6 8]
-=> (let [pred-path (comp-paths filterer)]
-     (select-one (pred-path even?) (range 10)))
-ClassCastException com.rpl.specter.impl.CompiledPath cannot be cast to clojure.lang.IFn
 ```
 
 ## if-path
@@ -520,27 +507,6 @@ navigated at the structure.
 :b
 ```
 
-## params-reset
-
-`(params-reset params-path)`
-
-Instructs the provided navigator to backtrack in the params array by the number of parameters it requires before navigating. Useful for defining recursive navigators.
-
-```clojure
-=> (let [k-path (comp-paths must (params-reset must))] 
-     (select-one (k-path :a) {:a {:a 0}}))
-0
-=> (let [k-path (comp-paths must (params-reset must) must)] 
-     (select-one (k-path :a :b) {:a {:a {:b 1}}}))
-1
-;; A recursive navigator that iteratively navigates to a passed in key
-=> (declarepath MyWalker [k])
-=> (providepath MyWalker
-     (stay-then-continue must (params-reset MyWalker)))
-=> (select (MyWalker :a) {:a {:a {:b 2}}})
-({:a {:a {:b 2}}} {:a {:b 2}} {:b 2})
-```
-
 ## parser
 
 `(parser parse-fn unparse-fn)`
@@ -572,9 +538,6 @@ See also [must](#must).
 
 ```clojure
 => (select [ALL (pred even?)] (range 10))
-[0 2 4 6 8]
-=> (let [p-path (comp-paths ALL pred)]
-     (select (p-path even?) (range 10)))
 [0 2 4 6 8]
 ```
 
