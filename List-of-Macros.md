@@ -67,7 +67,7 @@ the path using `terminal`. Error is thrown if navigation finishes at a
 non-`terminal` navigator. `terminal-val` is a wrapper around `terminal` and is
 the `multi-transform` equivalent of `setval`. Much more efficient than doing the
 transformations with `transform` one after another when the transformations
-share a lot of navigation. This macro will do inline factoring and caching of the path.
+share a lot of navigation. This macro will do inline compilation and caching of the path.
 
 ```clojure
 (multi-transform [:a :b (multi-path [:c (terminal-val :done)]
@@ -109,7 +109,7 @@ Note that the `user-ret` portion of the return value of `transform-fn` must be a
 `(select apath structure)`
 
 Navigates to and returns a sequence of all the elements specified by the path.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (select [ALL even?] (range 10))
@@ -128,7 +128,7 @@ _Added in 0.12.0_
 
 Returns any element found or `com.rpl.specter/NONE` if nothing selected. This is the most
 efficient of the various selection operations.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (select-any STAY :a)
@@ -146,7 +146,7 @@ true
 _Added in 0.12.0_
 
 Returns true if any element was selected, false otherwise.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (selected-any? STAY :a)
@@ -164,7 +164,7 @@ false
 `(select-first apath structure)`
 
 Returns first element found. Not any more efficient than `select`, just a convenience.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (select-first ALL (range 10))
@@ -179,7 +179,7 @@ This macro will do inline factoring and caching of the path.
 `(select-one apath structure)`
 
 Like `select`, but returns either one element or nil. Throws exception if multiple elements found.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 ;; srange returns one collection
@@ -196,7 +196,7 @@ IllegalArgumentException More than one element found for params
 `(select-one! apath structure)`
 
 Returns exactly one element, throws exception if zero or multiple elements found.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (select-one! FIRST (range 5))
@@ -214,7 +214,7 @@ IllegalArgumentException Expected exactly one element for params
 `(setval apath aval structure)`
 
 Navigates to each value specified by the path and replaces it by `aval`.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (setval [ALL even?] :even (range 10))
@@ -227,7 +227,7 @@ This macro will do inline factoring and caching of the path.
 
 Navigates to each value specified by the path and replaces it by the result of running
 the transform-fn on it.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 ```clojure
 => (transform [ALL] #(* % 2) (range 10))
@@ -249,7 +249,7 @@ _Added in 0.12.0_
 
 Return a reducible object that traverses over `structure` to every element
 specified by the path.
-This macro will do inline factoring and caching of the path.
+This macro will do inline compilation and caching of the path.
 
 `(reduce afn init (traverse apath structure))` will always return the same thing as `(reduce afn init (select apath structure))`, but more efficiently. The return value of `traverse` is only useful as an argument to `reduce`; for all other uses, prefer [select](#select).
 
