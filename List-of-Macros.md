@@ -258,7 +258,7 @@ This macro will do inline compilation and caching of the path.
 45
 => (reduce + 0 (traverse (walker integer?) [[[1 2]] 3 [4 [[5 6 7]] 8] 9]))
 45
-=> (into #{} (traverse (walker integer?)) [[1 2] 1 [[3 [4 4 [2]]]]])
+=> (into #{} (traverse (walker integer?) [[1 2] 1 [[3 [4 4 [2]]]]]))
 #{1 4 3 2}
 => (traverse (walker integer?) [[[1 2]] 3 [4 [[5 6 7]] 8] 9])
 ;; returns object implementing clojure.lang.IReduce
