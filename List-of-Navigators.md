@@ -450,9 +450,8 @@ See also [must](#must)
 ```clojure
 => (select-one (keypath :a) {:a 0})
 0
-;; Only one key allowed
 => (select-one (keypath :a :b) {:a {:b 1}})
-{:b 1}
+1
 => (select [ALL (keypath :a)] [{:a 0} {:b 1}])
 [0 nil]
 ;; Does not stop navigation
