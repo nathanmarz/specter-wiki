@@ -20,6 +20,7 @@
     - [extend-protocolpath](#extend-protocolpath)
     - [path](#path)
     - [providepath](#providepath)
+    - [recursive-path](#recursive-path)
 - [Collector Macros](#collector-macros)
     - [defcollector](#defcollector)
 - [Navigator Macros](#navigator-macros)
@@ -354,6 +355,18 @@ Any higher order navigators passed to `path` must include their arguments, even 
 `(providepath name apath)`
 
 Defines the path that will be associated to the provided name. The name must have been previously declared using [declarepath](#declarepath).
+
+## recursive-path
+
+`(recursive-path params self-sym path)`
+
+Assists in making recursive paths, both parameterized and unparameterized. Example:
+
+```clojure
+=> (let [tree-walker (recursive-path [] p (if-path vector? [ALL p] STAY))]
+     (select tree-walker [1 [2 [3 4] 5] [[6]]]))
+[1 2 3 4 5 6]
+```
 
 # Collector Macros
 
