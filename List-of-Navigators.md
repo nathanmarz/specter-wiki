@@ -33,6 +33,7 @@
     - [continuous-subseqs](#continuous-subseqs)
     - [filterer](#filterer)
     - [if-path](#if-path)
+    - [index-nav](#index-nav)
     - [keypath](#keypath)
     - [multi-path](#multi-path)
     - [must](#must)
@@ -487,6 +488,22 @@ See also [if-path](#if-path)
 ;; is equivalent to
 => (select (if-path (must :d) :a STOP) {:b 0, :d 1})
 ()
+```
+
+## index-nav
+
+Navigates to the index of the sequence if within 0 and size. Transforms move element
+at that index to the new index, shifting other elements in the sequence.
+
+`(index-nav index)`
+
+```clojure
+=> (select [(index-nav 0)] [1 2 3 4 5])
+[0]
+=> (select [(index-nav 7)] [1 2 3 4 5])
+[]
+=> (setval (index-nav 2) 0 [1 2 3 4 5])
+[3 1 2 4 5]
 ```
 
 ## keypath
