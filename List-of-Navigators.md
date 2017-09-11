@@ -9,6 +9,7 @@
     - [DISPENSE](#dispense)
     - [END](#end)
     - [FIRST](#first)
+    - [INDEXED-VALS](#indexed-vals)
     - [LAST](#last)
     - [MAP-KEYS](#map-keys)
     - [MAP-VALS](#map-vals)
@@ -152,6 +153,19 @@ Drops all collected values for subsequent navigation.
 nil
 => (select FIRST '())
 nil
+```
+
+## INDEXED-VALS
+
+Navigates to [index elem] pairs for each element in a sequence. Transforms of index move element at that index to the new index, shifting other elements in the sequence. Indices seen during transform take into account any shifting from prior sequence elements changing indices.
+
+```clojure
+=> (select [INDEXED-VALS] [1 2 3 4 5])
+[[0 1] [1 2] [2 3] [3 4] [4 5]]
+=> (setval [INDEXED-VALS FIRST] 0 [1 2 3 4 5])
+[5 4 3 2 1]
+=> (setval [INDEXED-VALS FIRST] 1 [1 2 3 4 5])
+[1 5 4 3 2]
 ```
 
 ## LAST
