@@ -26,6 +26,7 @@
     - [STOP](#stop)
     - [VAL](#val)
 - [Parameterized Navigators (and Functions)](#parameterized-navigators-and-functions)
+    - [before-index](#before-index)
     - [codewalker](#codewalker)
     - [collect](#collect)
     - [collect-one](#collect-one)
@@ -348,6 +349,30 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 ```
 
 # Parameterized Navigators (and Functions)
+
+## before-index
+
+`(before-index index)`
+
+Navigates to the empty space between the index and the prior index. Selects navigate to NONE.
+
+```clojure
+=> (select-any (before-index 0) [1 2 3])
+:com.rpl.specter.impl/NONE
+```
+
+Transforms to non-NONE insert at the index position.
+
+```
+=> (setval (before-index 0) :a [1 2 3])
+[:a 1 2 3]
+=> (setval (before-index 1) NONE [1 2 3])
+[1 2 3]
+=> (setval (before-index 1) :a [1 2 3])
+[1 :a 2 3]
+=> (setval (before-index 3) :a [1 2 3])
+[1 2 3 :a]
+```
 
 ## codewalker
 
