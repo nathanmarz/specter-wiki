@@ -134,6 +134,15 @@
 ([:foo :baz] [:foo :bar])
 ```
 
+As of Specter 1.0.0, `BEGINNING` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any BEGINNING "abc")
+""
+=> (setval BEGINNING "b" "a")
+"ba"
+```
+
 ## DISPENSE
 
 _Added in 0.12.0_
@@ -164,6 +173,15 @@ Drops all collected values for subsequent navigation.
 ([:foo :bar] [:foo :baz])
 ```
 
+As of Specter 1.0.0, `END` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any END "abc")
+""
+=> (setval END "b" "a")
+"ab"
+```
+
 ## FIRST
 
 `FIRST` navigates to the first element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
@@ -179,6 +197,15 @@ Drops all collected values for subsequent navigation.
 nil
 => (select FIRST '())
 nil
+```
+
+As of Specter 1.0.0, `FIRST` can now work with strings. It navigates to or transforms characters.
+
+```clojure
+=> (select-any FIRST "abc")
+\a
+=> (setval FIRST \q "abc")
+"qbc"
 ```
 
 ## INDEXED-VALS
@@ -209,6 +236,15 @@ nil
 nil
 => (select LAST '())
 nil
+```
+
+As of Specter 1.0.0, `LAST` can now work with strings. It navigates to or transforms characters.
+
+```clojure
+=> (select-any LAST "abc")
+\c
+=> (setval LAST "q" "abc")
+"abq"
 ```
 
 ## MAP-KEYS
@@ -800,6 +836,17 @@ See also [srange-dynamic](#srange-dynamic).
 IndexOutOfBoundsException
 => (setval (srange 2 4) [] (range 5))
 (0 1 4)
+```
+
+As of Specter 1.0.0, `srange` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any (srange 1 3) "abcd")
+"bc"
+=> (setval (srange 1 3) "" "abcd")
+"ad"
+=> (setval [(srange 1 3) s/END] "x" "abcd")
+"abcxd"
 ```
 
 ## srange-dynamic
