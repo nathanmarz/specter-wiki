@@ -160,7 +160,7 @@ nil
 
 ## INDEXED-VALS
 
-Navigates to [index elem] pairs for each element in a sequence. Transforms of index move element at that index to the new index, shifting other elements in the sequence. Indices seen during transform take into account any shifting from prior sequence elements changing indices.
+`INDEXED-VALS` navigates to [index elem] pairs for each element in a sequence. Transforms of index move element at that index to the new index, shifting other elements in the sequence. Indices seen during transform take into account any shifting from prior sequence elements changing indices.
 
 ```clojure
 => (select [INDEXED-VALS] [1 2 3 4 5])
@@ -225,7 +225,7 @@ the structure has no metadata or may not contain metadata.
 
 ## NAME
 
-Navigates to the name of a keyword.
+`NAME` navigates to the name of a keyword.
 
 ```clojure
 => (select [NAME] :key)
@@ -236,7 +236,7 @@ Navigates to the name of a keyword.
 
 ## NAMESPACE
 
-Navigates to the namespace of keywords or variables.
+`NAMESPACE` navigates to the namespace of keywords or variables.
 
 ```clojure
 => (select [ALL NAMESPACE] [::test ::fun])
@@ -302,7 +302,7 @@ nil
 
 ## VAL
 
-Collects the current structure.
+`VAL` collects the current structure.
 
 See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 
