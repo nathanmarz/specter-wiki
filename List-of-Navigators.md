@@ -312,24 +312,28 @@ the structure has no metadata or may not contain metadata.
 
 ## NAME
 
-`NAME` navigates to the name of a keyword.
+`NAME` navigates to the name of a keyword or symbol.
 
 ```clojure
 => (select [NAME] :key)
 ["key"]
 => (select [MAP-KEYS NAME] {:a 3 :b 4 :c 5})
 ["a" "b" "c"]
+=> (setval [MAP-KEYS NAME] "q" {'a/b 3 'bbb/c 4 'd 5})
+{a/q 3, bbb/q 4, q 5}
 ```
 
 ## NAMESPACE
 
-`NAMESPACE` navigates to the namespace of keywords or variables.
+`NAMESPACE` navigates to the namespace of keywords or symbols.
 
 ```clojure
 => (select [ALL NAMESPACE] [::test ::fun])
 ["playground.specter" "playground.specter"]
 => (select [ALL NAMESPACE] [::test :fun])
 ["playground.specter" nil]
+=> (setval [ALL NAMESPACE] "a" [::test :fun])
+[:a/test :a/fun]
 ```
 
 ## NIL->LIST
