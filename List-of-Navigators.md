@@ -42,6 +42,7 @@
     - [putval](#putval)
     - [not-selected?](#not-selected)
     - [selected?](#selected)
+    - [set-elem](#set-elem)
     - [srange](#srange)
     - [srange-dynamic](#srange-dynamic)
     - [stay-then-continue](#stay-then-continue)
@@ -647,6 +648,22 @@ See also [not-selected?](#not-selected?).
 => (select-one (selected? [ALL (must :a) even?]) [{:a 0} {:a 1} {:a 2} {:a 3}])
 [{:a 0} {:a 1} {:a 2} {:a 3}]
 nil
+```
+
+## set-elem
+
+`(set-elem element)`
+
+Navigates to the given element in the set only if it exists in the set.
+Can transform to NONE to remove the element from the set.
+
+```clojure
+=> (select [(set-elem 3)] #{3 4 5})
+[3]
+=> (select [(set-elem 3)] #{4 5})
+[]
+=> (setval [(set-elem 3)] NONE #{3 4 5})
+#{4 5}
 ```
 
 ## srange
