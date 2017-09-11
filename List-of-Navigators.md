@@ -92,6 +92,13 @@
 {:a :b, :c :d}
 ```
 
+`ALL` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [ALL nil?] NONE [1 2 nil 3 nil])
+[1 2 3]
+```
+
 ## ATOM
 
 `ATOM` navigates to the value of an atom.
@@ -199,6 +206,13 @@ nil
 nil
 ```
 
+`FIRST` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval FIRST NONE [:a :b :c :d :e])
+[:b :c :d :e]
+```
+
 As of Specter 1.0.0, `FIRST` can now work with strings. It navigates to or transforms characters.
 
 ```clojure
@@ -238,6 +252,13 @@ nil
 nil
 ```
 
+`LAST` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval LAST NONE [:a :b :c :d :e])
+[:a :b :c :d]
+```
+
 As of Specter 1.0.0, `LAST` can now work with strings. It navigates to or transforms characters.
 
 ```clojure
@@ -265,6 +286,13 @@ As of Specter 1.0.0, `LAST` can now work with strings. It navigates to or transf
 (:b :d)
 => (select [MAP-VALS MAP-VALS] {:a {:b :c}, :d {:e :f}})
 (:c :f)
+```
+
+`MAP-VALS` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [MAP-VALS even?] NONE {:a 1 :b 2 :c 3 :d 4})
+{:a 1 :c 3}
 ```
 
 ## META
@@ -620,6 +648,13 @@ See also [must](#must)
 [0 :boo]
 ```
 
+`keypath` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [(keypath :a)] NONE {:a 3 :b 4})
+{:b 4}
+```
+
 ## map-key
 
 `(map-key key)`
@@ -678,6 +713,13 @@ See also [keypath](#keypath) and [pred](#pred).
 0
 => (select-one (must :a) {:b 1})
 nil
+```
+
+`must` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval (must :a) NONE {:a 1 :b 2})
+{:b 2}
 ```
 
 ## nil->val
@@ -910,7 +952,7 @@ As of Specter 1.0.0, `srange` can now work with strings. It navigates to or tran
 "bc"
 => (setval (srange 1 3) "" "abcd")
 "ad"
-=> (setval [(srange 1 3) s/END] "x" "abcd")
+=> (setval [(srange 1 3) END] "x" "abcd")
 "abcxd"
 ```
 
