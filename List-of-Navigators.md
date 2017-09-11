@@ -743,6 +743,71 @@ See also [must](#must).
 [0 2 4 6 8]
 ```
 
+## pred=
+
+`(pred= value)`
+
+Keeps elements only if they equal the provided value.
+
+See also [pred](#pred).
+
+```clojure
+=> (select [ALL (pred= 2)] [1 2 2 3 4 0])
+[2 2]
+```
+
+## pred<
+
+`(pred< value)`
+
+Keeps elements only if they are less than the provided value.
+
+```clojure
+=> (select [ALL (pred< 3)] [1 2 2 3 4 0])
+[1 2 2 0]
+```
+
+See also [pred](#pred).
+
+## pred>
+
+`(pred> value)`
+
+Keeps elements only if they are greater than the provided value.
+
+```clojure
+=> (select [ALL (pred> 3)] [1 2 2 3 4 0])
+[4]
+```
+
+See also [pred](#pred).
+
+## pred<=
+
+`(pred<= value)`
+
+Keeps elements only if they are less than the provided value.
+
+```clojure
+=> (select [ALL (pred<= 3)] [1 2 2 3 4 0])
+[1 2 2 3 0]
+```
+
+See also [pred](#pred).
+
+## pred>=
+
+`(pred>= value)`
+
+Keeps elements only if they are greater than the provided value.
+
+```clojure
+=> (select [ALL (pred>= 3)] [1 2 2 3 4 0])
+[3 4]
+```
+
+See also [pred](#pred).
+
 ## putval
 
 `(putval val)`
