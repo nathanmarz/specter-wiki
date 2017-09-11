@@ -37,6 +37,7 @@
     - [multi-path](#multi-path)
     - [must](#must)
     - [nil->val](#nil-val)
+    - [nthpath](#nthpath)
     - [parser](#parser)
     - [pred](#pred)
     - [putval](#putval)
@@ -553,6 +554,21 @@ navigated at the structure.
 :a
 => (select-one (nil->val :a) :b)
 :b
+```
+
+## nthpath
+
+`(nthpath index)`
+
+Navigate to the specified indices (one after another). Transform to NONE to remove the element from the sequence.
+
+```clojure
+=> (select [(nthpath 0)] [1 2 3])
+[1]
+=> (select [(nthpath 2)] [1 2 3])
+[3]
+=> (setval [(nthpath 2)] NONE [1 2 3])
+[1 2]
 ```
 
 ## parser
