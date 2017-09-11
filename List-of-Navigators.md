@@ -165,7 +165,7 @@ Drops all collected values for subsequent navigation.
 
 ## END
 
-`END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence. 
+`END` navigates to the empty subsequence after the end of a collection. Useful with `setval` to add values onto the end of a sequence.
 
 ```clojure
 => (setval END '(5 6) (range 5))
@@ -270,7 +270,7 @@ As of Specter 1.0.0, `LAST` can now work with strings. It navigates to or transf
 
 ## MAP-KEYS
 
-`MAP-KEYS` navigates to every key in a map. `MAP-VALS` is more efficient than `[ALL FIRST]`.
+`MAP-KEYS` navigates to every key in a map. `MAP-KEYS` is more efficient than `[ALL FIRST]`.
 
 ```clojure
 => (select [MAP-KEYS] {:a 3 :b 4})
@@ -305,7 +305,7 @@ the structure has no metadata or may not contain metadata.
 ```clojure
 => (select-one META (with-meta {:a 0} {:meta :data}))
 {:meta :data}
-=> (meta (transform META #(assoc % :meta :datum) 
+=> (meta (transform META #(assoc % :meta :datum)
            (with-meta {:a 0} {:meta :data})))
 {:meta :datum}
 ```
@@ -450,7 +450,7 @@ data structure. `codewalker` preserves the metadata of any forms traversed.
 See also [walker](#walker).
 
 ```clojure
-=> (select (codewalker #(and (map? %) (even? (:a %)))) 
+=> (select (codewalker #(and (map? %) (even? (:a %))))
            (list (with-meta {:a 2} {:foo :bar}) (with-meta {:a 1} {:foo :baz})))
 ({:a 2})
 => (map meta *1)
@@ -473,7 +473,7 @@ See also [VAL](#val), [collect-one](#collect-one), and [putval](#putval)
 => (select [(collect ALL) (collect ALL) ALL] (range 3))
 [[[0 1 2] [0 1 2] 0] [[0 1 2] [0 1 2] 1] [[0 1 2] [0 1 2] 2]]
 ;; Add the sum of the evens to the first element of the seq
-=> (transform [(collect ALL even?) FIRST] 
+=> (transform [(collect ALL even?) FIRST]
               (fn [evens first] (reduce + first evens))
               (range 5))
 (6 1 2 3 4)
@@ -755,14 +755,14 @@ Navigate to the specified indices (one after another). Transform to NONE to remo
 
 `(parser parse-fn unparse-fn)`
 
-Navigate to the result of running `parse-fn` on the value. For 
-transforms, the transformed value then has `unparse-fn` run on 
+Navigate to the result of running `parse-fn` on the value. For
+transforms, the transformed value then has `unparse-fn` run on
 it to get the final value at this point.
 
 ```clojure
 => (defn parse [address] (string/split address #"@"))
 => (defn unparse [address] (string/join "@" address))
-=> (select [ALL (parser parse unparse) #(= "gmail.com" (second %))] 
+=> (select [ALL (parser parse unparse) #(= "gmail.com" (second %))]
            ["test@example.com" "test@gmail.com"])
 [["test" "gmail.com"]]
 => (transform [ALL (parser parse unparse) #(= "gmail.com" (second %))]
@@ -828,7 +828,7 @@ See also [pred](#pred).
 
 `(pred<= value)`
 
-Keeps elements only if they are less than the provided value.
+Keeps elements only if they are less than or equal to the provided value.
 
 ```clojure
 => (select [ALL (pred<= 3)] [1 2 2 3 4 0])
@@ -841,7 +841,7 @@ See also [pred](#pred).
 
 `(pred>= value)`
 
-Keeps elements only if they are greater than the provided value.
+Keeps elements only if they are greater than or equal to the provided value.
 
 ```clojure
 => (select [ALL (pred>= 3)] [1 2 2 3 4 0])
@@ -876,7 +876,7 @@ The input path may be parameterized, in which case the result of selected?
 will be parameterized in the order of which the parameterized navigators
 were declared.
 
-See also [selected?](#selected?). 
+See also [selected?](#selected?).
 
 ```clojure
 => (select [ALL (not-selected? even?)] (range 10))
@@ -898,7 +898,7 @@ The input path may be parameterized, in which case the result of selected?
 will be parameterized in the order of which the parameterized navigators
 were declared.
 
-See also [not-selected?](#not-selected?). 
+See also [not-selected?](#not-selected?).
 
 ```clojure
 => (select [ALL (selected? even?)] (range 10))
@@ -1065,7 +1065,7 @@ See also [terminal-val](#terminal-val) and [multi-transform](List-of-Macros#mult
 ```clojure
 => (multi-transform [(putval 3) (terminal +)] 1)
 4
-=> (multi-transform [:a :b (multi-path [:c (terminal inc)] 
+=> (multi-transform [:a :b (multi-path [:c (terminal inc)]
                                        [:d (putval 3) (terminal +)])]
                     {:a {:b {:c 42 :d 1}}})
 {:a {:b {:c 43, :d 4}}}
@@ -1148,10 +1148,10 @@ See also [codewalker](#codewalker)
 (4 2 6)
 ;; Note that (3 4) and (6 7) are not returned because the search halted at
 ;; (2 (3 4) (5 (6 7))).
-=> (select (walker #(and (counted? %) (even? (count %)))) 
+=> (select (walker #(and (counted? %) (even? (count %))))
      '(1 (2 (3 4) 5 (6 7)) (8 9)))
 ((2 (3 4) 5 (6 7)) (8 9))
-=> (setval (walker #(and (counted? %) (even? (count %)))) 
+=> (setval (walker #(and (counted? %) (even? (count %))))
            :double
            '(1 (2 (3 4) 5 (6 7)) (8 9)))
 (1 :double :double)
