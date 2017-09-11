@@ -13,6 +13,7 @@
     - [MAP-KEYS](#map-keys)
     - [MAP-VALS](#map-vals)
     - [META](#meta)
+    - [NAME](#name)
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
@@ -202,6 +203,17 @@ the structure has no metadata or may not contain metadata.
 => (meta (transform META #(assoc % :meta :datum) 
            (with-meta {:a 0} {:meta :data})))
 {:meta :datum}
+```
+
+## NAME
+
+Navigates to the name of a keyword.
+
+```clojure
+=> (select [NAME] :key)
+["key"]
+=> (select [MAP-KEYS NAME] {:a 3 :b 4 :c 5})
+["a" "b" "c"]
 ```
 
 ## NIL->LIST
