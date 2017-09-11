@@ -6,6 +6,7 @@
     - [AFTER-ELEM](#after-elem)
     - [ALL](#all)
     - [ATOM](#atom)
+    - [BEFORE-ELEM](#before-elem)
     - [BEGINNING](#beginning)
     - [DISPENSE](#dispense)
     - [END](#end)
@@ -102,6 +103,15 @@
 => (transform ATOM inc a)
 => @a
 2
+```
+
+## BEFORE-ELEM
+
+`BEFORE-ELEM` navigates to the 'void' element before the sequence. For transformations – if result is not `NONE`, then prepend that value.
+
+```clojure
+=> (setval BEFORE-ELEM 3 [1 2])
+[3 1 2]
 ```
 
 ## BEGINNING
