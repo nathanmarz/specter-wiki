@@ -3,22 +3,30 @@
 **Table of Contents**
 
 - [Unparameterized Navigators](#unparameterized-navigators)
+    - [AFTER-ELEM](#after-elem)
     - [ALL](#all)
     - [ATOM](#atom)
+    - [BEFORE-ELEM](#before-elem)
     - [BEGINNING](#beginning)
     - [DISPENSE](#dispense)
     - [END](#end)
     - [FIRST](#first)
+    - [INDEXED-VALS](#indexed-vals)
     - [LAST](#last)
+    - [MAP-KEYS](#map-keys)
     - [MAP-VALS](#map-vals)
     - [META](#meta)
+    - [NAME](#name)
+    - [NAMESPACE](#namespace)
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
+    - [NONE-ELEM](#none-elem)
     - [STAY](#stay)
     - [STOP](#stop)
     - [VAL](#val)
 - [Parameterized Navigators (and Functions)](#parameterized-navigators-and-functions)
+    - [before-index](#before-index)
     - [codewalker](#codewalker)
     - [collect](#collect)
     - [collect-one](#collect-one)
@@ -29,15 +37,19 @@
     - [continuous-subseqs](#continuous-subseqs)
     - [filterer](#filterer)
     - [if-path](#if-path)
+    - [index-nav](#index-nav)
     - [keypath](#keypath)
+    - [map-key](#map-key)
     - [multi-path](#multi-path)
     - [must](#must)
     - [nil->val](#nil-val)
+    - [nthpath](#nthpath)
     - [parser](#parser)
     - [pred](#pred)
     - [putval](#putval)
     - [not-selected?](#not-selected)
     - [selected?](#selected)
+    - [set-elem](#set-elem)
     - [srange](#srange)
     - [srange-dynamic](#srange-dynamic)
     - [stay-then-continue](#stay-then-continue)
@@ -56,6 +68,15 @@
 
 # Unparameterized Navigators
 
+## AFTER-ELEM
+
+`AFTER-ELEM` navigates to the 'void' element after the sequence. For transformations – if result is not `NONE`, then append that value.
+
+```
+=> (setval AFTER-ELEM 3 [1 2])
+[1 2 3]
+```
+
 ## ALL
 
 `ALL` navigates to every element in a collection. If the collection is a map, it will navigate to each key-value pair `[key value]`.
@@ -69,6 +90,13 @@
 [[:a :b] [:c :d]]
 => (transform ALL identity {:a :b, :c :d})
 {:a :b, :c :d}
+```
+
+`ALL` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [ALL nil?] NONE [1 2 nil 3 nil])
+[1 2 3]
 ```
 
 ## ATOM
@@ -87,6 +115,15 @@
 2
 ```
 
+## BEFORE-ELEM
+
+`BEFORE-ELEM` navigates to the 'void' element before the sequence. For transformations – if result is not `NONE`, then prepend that value.
+
+```clojure
+=> (setval BEFORE-ELEM 3 [1 2])
+[3 1 2]
+```
+
 ## BEGINNING
 
 `BEGINNING` navigates to the empty subsequence before the beginning of a collection. Useful with `setval` to add values onto the beginning of a sequence.
@@ -102,6 +139,15 @@
 [0 1 2 3 4]
 => (setval BEGINNING {:foo :baz} {:foo :bar})
 ([:foo :baz] [:foo :bar])
+```
+
+As of Specter 1.0.0, `BEGINNING` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any BEGINNING "abc")
+""
+=> (setval BEGINNING "b" "a")
+"ba"
 ```
 
 ## DISPENSE
@@ -134,6 +180,15 @@ Drops all collected values for subsequent navigation.
 ([:foo :bar] [:foo :baz])
 ```
 
+As of Specter 1.0.0, `END` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any END "abc")
+""
+=> (setval END "b" "a")
+"ab"
+```
+
 ## FIRST
 
 `FIRST` navigates to the first element of a collection. If the collection is a map, returns a key-value pair `[key value]`. If the collection is empty, navigation stops.
@@ -149,6 +204,35 @@ Drops all collected values for subsequent navigation.
 nil
 => (select FIRST '())
 nil
+```
+
+`FIRST` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval FIRST NONE [:a :b :c :d :e])
+[:b :c :d :e]
+```
+
+As of Specter 1.0.0, `FIRST` can now work with strings. It navigates to or transforms characters.
+
+```clojure
+=> (select-any FIRST "abc")
+\a
+=> (setval FIRST \q "abc")
+"qbc"
+```
+
+## INDEXED-VALS
+
+`INDEXED-VALS` navigates to [index elem] pairs for each element in a sequence. Transforms of index move element at that index to the new index, shifting other elements in the sequence. Indices seen during transform take into account any shifting from prior sequence elements changing indices.
+
+```clojure
+=> (select [INDEXED-VALS] [1 2 3 4 5])
+[[0 1] [1 2] [2 3] [3 4] [4 5]]
+=> (setval [INDEXED-VALS FIRST] 0 [1 2 3 4 5])
+[5 4 3 2 1]
+=> (setval [INDEXED-VALS FIRST] 1 [1 2 3 4 5])
+[1 5 4 3 2]
 ```
 
 ## LAST
@@ -168,6 +252,31 @@ nil
 nil
 ```
 
+`LAST` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval LAST NONE [:a :b :c :d :e])
+[:a :b :c :d]
+```
+
+As of Specter 1.0.0, `LAST` can now work with strings. It navigates to or transforms characters.
+
+```clojure
+=> (select-any LAST "abc")
+\c
+=> (setval LAST "q" "abc")
+"abq"
+```
+
+## MAP-KEYS
+
+`MAP-KEYS` navigates to every key in a map. `MAP-VALS` is more efficient than `[ALL FIRST]`.
+
+```clojure
+=> (select [MAP-KEYS] {:a 3 :b 4})
+[:a :b]
+```
+
 ## MAP-VALS
 
 `MAP-VALS` navigates to every value in a map. `MAP-VALS` is more efficient than `[ALL LAST]`.
@@ -177,6 +286,13 @@ nil
 (:b :d)
 => (select [MAP-VALS MAP-VALS] {:a {:b :c}, :d {:e :f}})
 (:c :f)
+```
+
+`MAP-VALS` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [MAP-VALS even?] NONE {:a 1 :b 2 :c 3 :d 4})
+{:a 1 :c 3}
 ```
 
 ## META
@@ -192,6 +308,28 @@ the structure has no metadata or may not contain metadata.
 => (meta (transform META #(assoc % :meta :datum) 
            (with-meta {:a 0} {:meta :data})))
 {:meta :datum}
+```
+
+## NAME
+
+`NAME` navigates to the name of a keyword.
+
+```clojure
+=> (select [NAME] :key)
+["key"]
+=> (select [MAP-KEYS NAME] {:a 3 :b 4 :c 5})
+["a" "b" "c"]
+```
+
+## NAMESPACE
+
+`NAMESPACE` navigates to the namespace of keywords or variables.
+
+```clojure
+=> (select [ALL NAMESPACE] [::test ::fun])
+["playground.specter" "playground.specter"]
+=> (select [ALL NAMESPACE] [::test :fun])
+["playground.specter" nil]
 ```
 
 ## NIL->LIST
@@ -227,6 +365,17 @@ the structure has no metadata or may not contain metadata.
 :foo
 ```
 
+## NONE-ELEM
+
+`NONE-ELEM` navigates to the 'void' elem in a set. For transformations - if the result is not `NONE`, then add that value to the set.
+
+```
+=> (setval NONE-ELEM 3 #{1 2})
+#{1 2 3}
+=> (setval NONE-ELEM 1 nil)
+#{1}
+```
+
 ## STAY
 
 `STAY` stays in place. It is the no-op navigator.
@@ -251,7 +400,7 @@ nil
 
 ## VAL
 
-Collects the current structure.
+`VAL` collects the current structure.
 
 See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 
@@ -264,6 +413,30 @@ See also [collect](#collect), [collect-one](#collect-one), and [putval](#putval)
 ```
 
 # Parameterized Navigators (and Functions)
+
+## before-index
+
+`(before-index index)`
+
+Navigates to the empty space between the index and the prior index. Selects navigate to NONE.
+
+```clojure
+=> (select-any (before-index 0) [1 2 3])
+:com.rpl.specter.impl/NONE
+```
+
+Transforms to non-NONE insert at the index position.
+
+```
+=> (setval (before-index 0) :a [1 2 3])
+[:a 1 2 3]
+=> (setval (before-index 1) NONE [1 2 3])
+[1 2 3]
+=> (setval (before-index 1) :a [1 2 3])
+[1 :a 2 3]
+=> (setval (before-index 3) :a [1 2 3])
+[1 2 3 :a]
+```
 
 ## codewalker
 
@@ -439,6 +612,22 @@ See also [if-path](#if-path)
 ()
 ```
 
+## index-nav
+
+Navigates to the index of the sequence if within 0 and size. Transforms move element
+at that index to the new index, shifting other elements in the sequence.
+
+`(index-nav index)`
+
+```clojure
+=> (select [(index-nav 0)] [1 2 3 4 5])
+[0]
+=> (select [(index-nav 7)] [1 2 3 4 5])
+[]
+=> (setval (index-nav 2) 0 [1 2 3 4 5])
+[3 1 2 4 5]
+```
+
 ## keypath
 
 `(keypath key)`
@@ -457,6 +646,40 @@ See also [must](#must)
 ;; Does not stop navigation
 => (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
 [0 :boo]
+```
+
+`keypath` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [(keypath :a)] NONE {:a 3 :b 4})
+{:b 4}
+```
+
+## map-key
+
+`(map-key key)`
+
+Navigates to the given key in the map (not to the value).
+
+```clojure
+=> (select [(map-key :a)] {:a 2 :b 3})
+[:a]
+=> (setval [(map-key :a)] :c {:a 2 :b 3})
+{:b 3, :c 2}
+```
+
+Navigates only if the key currently exists in the map.
+
+```clojure
+=> (select [(map-key :z)] {:a 2 :b 3})
+[]
+```
+
+Can transform to NONE to remove the key/value pair from the map.
+
+```clojure
+=> (setval [(map-key :a)] NONE {:a 2 :b 3})
+{:b 3}
 ```
 
 ## multi-path
@@ -492,6 +715,13 @@ See also [keypath](#keypath) and [pred](#pred).
 nil
 ```
 
+`must` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval (must :a) NONE {:a 1 :b 2})
+{:b 2}
+```
+
 ## nil->val
 
 `(nil->val v)`
@@ -504,6 +734,21 @@ navigated at the structure.
 :a
 => (select-one (nil->val :a) :b)
 :b
+```
+
+## nthpath
+
+`(nthpath index)`
+
+Navigate to the specified indices (one after another). Transform to NONE to remove the element from the sequence.
+
+```clojure
+=> (select [(nthpath 0)] [1 2 3])
+[1]
+=> (select [(nthpath 2)] [1 2 3])
+[3]
+=> (setval [(nthpath 2)] NONE [1 2 3])
+[1 2]
 ```
 
 ## parser
@@ -539,6 +784,71 @@ See also [must](#must).
 => (select [ALL (pred even?)] (range 10))
 [0 2 4 6 8]
 ```
+
+## pred=
+
+`(pred= value)`
+
+Keeps elements only if they equal the provided value.
+
+See also [pred](#pred).
+
+```clojure
+=> (select [ALL (pred= 2)] [1 2 2 3 4 0])
+[2 2]
+```
+
+## pred<
+
+`(pred< value)`
+
+Keeps elements only if they are less than the provided value.
+
+```clojure
+=> (select [ALL (pred< 3)] [1 2 2 3 4 0])
+[1 2 2 0]
+```
+
+See also [pred](#pred).
+
+## pred>
+
+`(pred> value)`
+
+Keeps elements only if they are greater than the provided value.
+
+```clojure
+=> (select [ALL (pred> 3)] [1 2 2 3 4 0])
+[4]
+```
+
+See also [pred](#pred).
+
+## pred<=
+
+`(pred<= value)`
+
+Keeps elements only if they are less than the provided value.
+
+```clojure
+=> (select [ALL (pred<= 3)] [1 2 2 3 4 0])
+[1 2 2 3 0]
+```
+
+See also [pred](#pred).
+
+## pred>=
+
+`(pred>= value)`
+
+Keeps elements only if they are greater than the provided value.
+
+```clojure
+=> (select [ALL (pred>= 3)] [1 2 2 3 4 0])
+[3 4]
+```
+
+See also [pred](#pred).
 
 ## putval
 
@@ -601,6 +911,22 @@ See also [not-selected?](#not-selected?).
 nil
 ```
 
+## set-elem
+
+`(set-elem element)`
+
+Navigates to the given element in the set only if it exists in the set.
+Can transform to NONE to remove the element from the set.
+
+```clojure
+=> (select [(set-elem 3)] #{3 4 5})
+[3]
+=> (select [(set-elem 3)] #{4 5})
+[]
+=> (setval [(set-elem 3)] NONE #{3 4 5})
+#{4 5}
+```
+
 ## srange
 
 `(srange start end)`
@@ -617,6 +943,17 @@ See also [srange-dynamic](#srange-dynamic).
 IndexOutOfBoundsException
 => (setval (srange 2 4) [] (range 5))
 (0 1 4)
+```
+
+As of Specter 1.0.0, `srange` can now work with strings. It navigates to or transforms substrings.
+
+```clojure
+=> (select-any (srange 1 3) "abcd")
+"bc"
+=> (setval (srange 1 3) "" "abcd")
+"ad"
+=> (setval [(srange 1 3) END] "x" "abcd")
+"abcxd"
 ```
 
 ## srange-dynamic
@@ -768,6 +1105,18 @@ See also [view](#view)
 (0 2 2 6 4 10 6 14 8 18)
 => (transform [(transformed [ALL odd?] #(* % 2)) ALL] #(/ % 2) (range 10))
 (0 1 1 3 2 5 3 7 4 9)
+```
+
+## traversed
+
+`(traversed path reduce-fn)`
+
+Navigates to a view of the current value by transforming with a reduction over
+the specified traversal.
+
+```clojure
+=> (select-any (traversed ALL +) [1 2 3 4])
+10
 ```
 
 ## view
