@@ -21,6 +21,7 @@
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
+    - [NONE-ELEM](#none-elem)
     - [STAY](#stay)
     - [STOP](#stop)
     - [VAL](#val)
@@ -296,6 +297,17 @@ the structure has no metadata or may not contain metadata.
 []
 => (select-one NIL->VECTOR :foo)
 :foo
+```
+
+## NONE-ELEM
+
+`NONE-ELEM` navigates to the 'void' elem in a set. For transformations - if the result is not `NONE`, then add that value to the set.
+
+```
+=> (setval NONE-ELEM 3 #{1 2})
+#{1 2 3}
+=> (setval NONE-ELEM 1 nil)
+#{1}
 ```
 
 ## STAY
