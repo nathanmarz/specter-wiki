@@ -14,6 +14,7 @@
     - [MAP-VALS](#map-vals)
     - [META](#meta)
     - [NAME](#name)
+    - [NAMESPACE](#namespace)
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
@@ -214,6 +215,17 @@ Navigates to the name of a keyword.
 ["key"]
 => (select [MAP-KEYS NAME] {:a 3 :b 4 :c 5})
 ["a" "b" "c"]
+```
+
+## NAMESPACE
+
+Navigates to the namespace of keywords or variables.
+
+```clojure
+=> (select [ALL NAMESPACE] [::test ::fun])
+["playground.specter" "playground.specter"]
+=> (select [ALL NAMESPACE] [::test :fun])
+["playground.specter" nil]
 ```
 
 ## NIL->LIST
