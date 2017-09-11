@@ -10,6 +10,7 @@
     - [END](#end)
     - [FIRST](#first)
     - [LAST](#last)
+    - [MAP-KEYS](#map-keys)
     - [MAP-VALS](#map-vals)
     - [META](#meta)
     - [NIL->LIST](#nil-list)
@@ -166,6 +167,15 @@ nil
 nil
 => (select LAST '())
 nil
+```
+
+## MAP-KEYS
+
+`MAP-KEYS` navigates to every key in a map. `MAP-VALS` is more efficient than `[ALL FIRST]`.
+
+```clojure
+=> (select [MAP-KEYS] {:a 3 :b 4})
+[:a :b]
 ```
 
 ## MAP-VALS
