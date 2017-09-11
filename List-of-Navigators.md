@@ -38,6 +38,7 @@
     - [if-path](#if-path)
     - [index-nav](#index-nav)
     - [keypath](#keypath)
+    - [map-key](#map-key)
     - [multi-path](#multi-path)
     - [must](#must)
     - [nil->val](#nil-val)
@@ -556,6 +557,33 @@ See also [must](#must)
 ;; Does not stop navigation
 => (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
 [0 :boo]
+```
+
+## map-key
+
+`(map-key key)`
+
+Navigates to the given key in the map (not to the value).
+
+```clojure
+=> (select [(map-key :a)] {:a 2 :b 3})
+[:a]
+=> (setval [(map-key :a)] :c {:a 2 :b 3})
+{:b 3, :c 2}
+```
+
+Navigates only if the key currently exists in the map.
+
+```clojure
+=> (select [(map-key :z)] {:a 2 :b 3})
+[]
+```
+
+Can transform to NONE to remove the key/value pair from the map.
+
+```clojure
+=> (setval [(map-key :a)] NONE {:a 2 :b 3})
+{:b 3}
 ```
 
 ## multi-path
