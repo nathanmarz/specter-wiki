@@ -3,6 +3,7 @@
 **Table of Contents**
 
 - [Unparameterized Navigators](#unparameterized-navigators)
+    - [AFTER-ELEM](#after-elem)
     - [ALL](#all)
     - [ATOM](#atom)
     - [BEGINNING](#beginning)
@@ -62,6 +63,15 @@
 
 
 # Unparameterized Navigators
+
+## AFTER-ELEM
+
+`AFTER-ELEM` navigates to the 'void' element after the sequence. For transformations – if result is not `NONE`, then append that value.
+
+```
+=> (setval AFTER-ELEM 3 [1 2])
+[1 2 3]
+```
 
 ## ALL
 
