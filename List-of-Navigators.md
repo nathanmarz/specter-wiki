@@ -1000,6 +1000,18 @@ See also [view](#view)
 (0 1 1 3 2 5 3 7 4 9)
 ```
 
+## traversed
+
+`(traversed path reduce-fn)`
+
+Navigates to a view of the current value by transforming with a reduction over
+the specified traversal.
+
+```clojure
+=> (select-any (traversed ALL +) [1 2 3 4])
+10
+```
+
 ## view
 
 `(view afn)`
