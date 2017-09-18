@@ -778,6 +778,17 @@ Navigate to the specified indices (one after another). Transform to NONE to remo
 [1 2]
 ```
 
+`nthpath` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each index, one after another.
+
+```clojure
+=> (select [(nthpath 0)] [1 2 3])
+[1]
+=> (select [(nthpath 0)] [[0 1 2] 2 3])
+[[0 1 2]]
+=> (select [(nthpath 0 0)] [[0 1 2] 2 3])
+[0]
+```
+
 ## parser
 
 `(parser parse-fn unparse-fn)`
