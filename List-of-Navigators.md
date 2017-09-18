@@ -639,7 +639,7 @@ at that index to the new index, shifting other elements in the sequence.
 
 ## keypath
 
-`(keypath key)`
+`(keypath & keys)`
 
 Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist. If you want to stop navigation, use [must](#must).
 
@@ -720,7 +720,7 @@ applies updates to the paths in order.
 
 ## must
 
-`(must key)`
+`(must & keys)`
 
 Navigates to the key only if it exists in the map. Note that must stops navigation if the key does not exist. If you do not want to stop navigation, use [keypath](#keypath).
 
@@ -765,7 +765,7 @@ navigated at the structure.
 
 ## nthpath
 
-`(nthpath index)`
+`(nthpath & indices)`
 
 Navigate to the specified indices (one after another). Transform to NONE to remove the element from the sequence.
 
