@@ -35,6 +35,7 @@
     - [cond-path](#cond-path)
     - [continue-then-stay](#continue-then-stay)
     - [continuous-subseqs](#continuous-subseqs)
+    - [eachnav](#eachnav)
     - [filterer](#filterer)
     - [if-path](#if-path)
     - [index-nav](#index-nav)
@@ -569,6 +570,14 @@ Navigates to every continuous subsequence of elements matching `pred`.
 [11 12 20]
 ```
 
+## eachnav
+
+`(eachnav navigator)`
+
+Turns a navigator that takes one argument into a navigator that takes many arguments and uses the same navigator with each argument. There is no performance cost to using this.
+
+`keypath`, `must`, and `nthpath` are all implemented using eachnav, making multiple arguments possible. See their documentation here, or look at their implementation in Specter core.
+
 ## filterer
 
 `(filterer & path)`
@@ -630,7 +639,7 @@ at that index to the new index, shifting other elements in the sequence.
 
 ## keypath
 
-`(keypath key)`
+`(keypath & keys)`
 
 Navigates to the specified key, navigating to nil if it does not exist. Note that this is different from stopping navigation if the key does not exist. If you want to stop navigation, use [must](#must).
 
@@ -646,6 +655,15 @@ See also [must](#must)
 ;; Does not stop navigation
 => (select [ALL (keypath :a) (nil->val :boo)] [{:a 0} {:b 1}])
 [0 :boo]
+```
+
+`keypath` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each key one after another.
+
+```clojure
+=> (select-one (keypath "out") {"out" {"in" 3}})
+{"in" 3}
+=> (select-one (keypath "out" "in") {"out" {"in" 3}})
+3
 ```
 
 `keypath` can transform to `NONE` to remove elements.
@@ -702,7 +720,7 @@ applies updates to the paths in order.
 
 ## must
 
-`(must key)`
+`(must & keys)`
 
 Navigates to the key only if it exists in the map. Note that must stops navigation if the key does not exist. If you do not want to stop navigation, use [keypath](#keypath).
 
@@ -713,6 +731,15 @@ See also [keypath](#keypath) and [pred](#pred).
 0
 => (select-one (must :a) {:b 1})
 nil
+```
+
+`must` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each key, one after another.
+
+```clojure
+=> (select-any (must :a) {:a {:b 2} :c 3})
+{:b 2}
+=> (select-any (must :a :b) {:a {:b 2} :c 3})
+2
 ```
 
 `must` can transform to `NONE` to remove elements.
@@ -738,7 +765,7 @@ navigated at the structure.
 
 ## nthpath
 
-`(nthpath index)`
+`(nthpath & indices)`
 
 Navigate to the specified indices (one after another). Transform to NONE to remove the element from the sequence.
 
@@ -749,6 +776,17 @@ Navigate to the specified indices (one after another). Transform to NONE to remo
 [3]
 => (setval [(nthpath 2)] NONE [1 2 3])
 [1 2]
+```
+
+`nthpath` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each index, one after another.
+
+```clojure
+=> (select [(nthpath 0)] [1 2 3])
+[1]
+=> (select [(nthpath 0)] [[0 1 2] 2 3])
+[[0 1 2]]
+=> (select [(nthpath 0 0)] [[0 1 2] 2 3])
+[0]
 ```
 
 ## parser
