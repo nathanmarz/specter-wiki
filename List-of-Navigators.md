@@ -715,6 +715,15 @@ See also [keypath](#keypath) and [pred](#pred).
 nil
 ```
 
+`must` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each key, one after another.
+
+```clojure
+=> (select-any (must :a) {:a {:b 2} :c 3})
+{:b 2}
+=> (select-any (must :a :b) {:a {:b 2} :c 3})
+2
+```
+
 `must` can transform to `NONE` to remove elements.
 
 ```clojure
