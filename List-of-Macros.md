@@ -360,12 +360,32 @@ Defines the path that will be associated to the provided name. The name must hav
 
 `(recursive-path params self-sym path)`
 
-Assists in making recursive paths, both parameterized and unparameterized. Example:
+Assists in making recursive paths, both parameterized and unparameterized.
+
+Here is an example of using `recursive-path` without parameters to select and transform:
 
 ```clojure
-=> (let [tree-walker (recursive-path [] p (if-path vector? [ALL p] STAY))]
-     (select tree-walker [1 [2 [3 4] 5] [[6]]]))
+=> (def tree-walker (recursive-path [] p (if-path vector? [ALL p] STAY)))
+#'playground.specter/tree-walker
+;; Get all of the values nested within vectors
+=> (select tree-walker [1 [2 [3 4] 5] [[6]]])
 [1 2 3 4 5 6]
+;; Transform all of the values within vectors
+=> (transform tree-walker inc [1 [2 [3 4] 5] [[6]]])
+[2 [3 [4 5] 6] [[7]]]
+```
+
+And here is an example of using `recursive-path` with parameters to select and transform:
+
+```clojure
+=> (def map-key-walker (recursive-path [akey] p [ALL (if-path [FIRST #(= % akey)] LAST [LAST p])]))
+#'playground.specter/map-key-walker
+;; Get all the vals for key :aaa, regardless of where they are in the structure
+=> (select (map-key-walker :aaa) {:a {:aaa 3 :b {:c {:aaa 2} :aaa 1}}})
+[3 2 1]
+;; Transform all the vals for key :aaa, regardless of where they are in the structure
+=> (transform (map-key-walker :aaa) inc {:a {:aaa 3 :b {:c {:aaa 2} :aaa 1}}})
+{:a {:aaa 4, :b {:c {:aaa 3}, :aaa 2}}}
 ```
 
 # Collector Macros
