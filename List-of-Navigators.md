@@ -35,6 +35,7 @@
     - [cond-path](#cond-path)
     - [continue-then-stay](#continue-then-stay)
     - [continuous-subseqs](#continuous-subseqs)
+    - [eachnav](#eachnav)
     - [filterer](#filterer)
     - [if-path](#if-path)
     - [index-nav](#index-nav)
@@ -568,6 +569,14 @@ Navigates to every continuous subsequence of elements matching `pred`.
 => (setval (continuous-subseqs #(< % 10)) [] [3 2 5 11 12 5 20])
 [11 12 20]
 ```
+
+## eachnav
+
+`(eachnav navigator)`
+
+Turns a navigator that takes one argument into a navigator that takes many arguments and uses the same navigator with each argument. There is no performance cost to using this.
+
+`keypath`, `must`, and `nthpath` are all implemented using eachnav, making multiple arguments possible. See their documentation here, or look at their implementation in Specter core.
 
 ## filterer
 
