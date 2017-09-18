@@ -648,6 +648,15 @@ See also [must](#must)
 [0 :boo]
 ```
 
+`keypath` can now take multiple arguments, for concisely specifying multiple steps. It navigates to each key one after another.
+
+```clojure
+=> (select-one (keypath "out") {"out" {"in" 3}})
+{"in" 3}
+=> (select-one (keypath "out" "in") {"out" {"in" 3}})
+3
+```
+
 `keypath` can transform to `NONE` to remove elements.
 
 ```clojure
