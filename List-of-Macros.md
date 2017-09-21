@@ -14,6 +14,7 @@
     - [setval](#setval)
     - [transform](#transform)
     - [traverse](#traverse)
+    - [traverse-all](#traverse)
 - [Path Macros](#path-macros)
     - [declarepath](#declarepath)
     - [defprotocolpath](#defprotocolpath)
@@ -263,6 +264,50 @@ This macro will do inline compilation and caching of the path.
 #{1 4 3 2}
 => (traverse (walker integer?) [[[1 2]] 3 [4 [[5 6 7]] 8] 9])
 ;; returns object implementing clojure.lang.IReduce
+```
+
+## traverse-all
+
+_Added in 1.0.0_
+
+`(traverse-all apath)`
+
+Returns a transducer that traverses over each element with the given path.
+
+Many common transducer use cases can be expressed more elegantly with traverse-all:
+
+```clojure
+;; Using Vanilla Clojure
+(transduce
+ (comp (map :a) (mapcat identity) (filter odd?))
+ +
+ [{:a [1 2]} {:a [3]} {:a [4 5]}])
+;; => 9
+
+;; The same logic expressed with Specter
+(transduce
+ (traverse-all [:a ALL odd?])
+ +
+ [{:a [1 2]} {:a [3]} {:a [4 5]}])
+;; => 9
+```
+
+Here are some more examples of using traverse-all:
+
+```clojure
+=> (into [] (traverse-all :a) [{:a 1} {:a 2}])
+[1 2]
+=> (transduce (traverse-all [ALL :a])
+		  +
+		  0
+		  [[{:a 1} {:a 2}] [{:a 3}]])
+6
+=> (transduce (comp (mapcat identity)
+			(traverse-all :a))
+		  (completing (fn [r i] (if (= i 4) (reduced r) (+ r i))))
+		  0
+		  [[{:a 1}] [{:a 2}] [{:a 4}] [{:a 5}]])
+3
 ```
 
 # Path Macros
