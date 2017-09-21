@@ -265,6 +265,14 @@ This macro will do inline compilation and caching of the path.
 ;; returns object implementing clojure.lang.IReduce
 ```
 
+## traverse-all
+
+_Added in 1.0.0_
+
+`(traverse-all apath)`
+
+Returns a transducer that traverses over each element with the given path.
+
 # Path Macros
 
 ## declarepath
