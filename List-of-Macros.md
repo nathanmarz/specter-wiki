@@ -14,7 +14,7 @@
     - [setval](#setval)
     - [transform](#transform)
     - [traverse](#traverse)
-    - [traverse-all](#traverse)
+    - [traverse-all](#traverse-all)
 - [Path Macros](#path-macros)
     - [declarepath](#declarepath)
     - [defprotocolpath](#defprotocolpath)
