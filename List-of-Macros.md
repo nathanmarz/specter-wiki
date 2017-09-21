@@ -292,6 +292,24 @@ Many common transducer use cases can be expressed more elegantly with traverse-a
 ;; => 9
 ```
 
+Here are some more examples of using traverse-all:
+
+```clojure
+=> (into [] (traverse-all :a) [{:a 1} {:a 2}])
+[1 2]
+=> (transduce (traverse-all [ALL :a])
+		  +
+		  0
+		  [[{:a 1} {:a 2}] [{:a 3}]])
+6
+=> (transduce (comp (mapcat identity)
+			(traverse-all :a))
+		  (completing (fn [r i] (if (= i 4) (reduced r) (+ r i))))
+		  0
+		  [[{:a 1}] [{:a 2}] [{:a 4}] [{:a 5}]])
+3
+```
+
 # Path Macros
 
 ## declarepath
