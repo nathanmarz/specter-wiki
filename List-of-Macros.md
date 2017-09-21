@@ -273,6 +273,23 @@ _Added in 1.0.0_
 
 Returns a transducer that traverses over each element with the given path.
 
+Many common transducer use cases can be expressed more elegantly with traverse-all:
+
+```clojure
+;; Using Vanilla Clojure
+(transduce
+ (comp (map :a) (mapcat identity) (filter odd?))
+ +
+ [{:a [1 2]} {:a [3]} {:a [4 5]}])
+;; => 9
+
+;; The same logic expressed with Specter
+(transduce
+ (traverse-all [:a ALL odd?])
+ +
+ [{:a [1 2]} {:a [3]} {:a [4 5]}])
+```
+
 # Path Macros
 
 ## declarepath
