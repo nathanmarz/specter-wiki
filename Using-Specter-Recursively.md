@@ -14,7 +14,7 @@ Here is a simple implementation of factorials in Clojure:
 
 ```clojure
 => (defn factorial [x]
-  (if (< x 2)
+	(if (< x 2)
 	  1
 	  (* x (factorial (dec x)))))
 #'playground.specter/factorial
@@ -24,7 +24,10 @@ Here is a simple implementation of factorials in Clojure:
 
 Here, the function definition *calls itself* with the symbol `factorial`. You still supply input - the value x - but producing the function's return value requires calling the function itself.
 
-So there are two elements to basic recursion: a name or symbol for the recursion point or function, and input arguments.
+We can see that there are up to three elements to basic recursion:
+  * a name or symbol for the recursion point or function (defn function-name)
+  * optional input arguments
+  * the body of the recursion - what you **do** recursively - and, at some point, calling the function by its name
 
 # Using Specter Recursively
 
