@@ -40,10 +40,12 @@ We can see that there are up to three elements to basic recursion:
 
 # Using Specter Recursively
 
-Using Specter recursively uses these two elements: a name (`self-sym` or self-symbol), and arguments (`params` or parameters). But it adds a third element: the `path` that the
+The core way that Specter enables recursion is through the parameterized macro, `recursive-path`. `recursive-path` takes the following form:
 
-This is actually similar to the function body.
+`(recursive-path params self-sym path)`
 
-requires **three elements**: a name (self-sym), arguments
+You can see that there are three arguments, which match onto our list above. (They are, however, in a different order.) The `self-sym` is the name; the `params` are the optional input arguments; and the `path` is the body of the recursion. This path can be recursive, referencing itself by the `self-sym`.
+
+(NOTE: QUESTION: Is there a reason why the self-sym is the second argument?)
 
 # Applications
