@@ -289,6 +289,7 @@ Many common transducer use cases can be expressed more elegantly with traverse-a
  (traverse-all [:a ALL odd?])
  +
  [{:a [1 2]} {:a [3]} {:a [4 5]}])
+;; => 9
 ```
 
 # Path Macros
