@@ -6,6 +6,9 @@ Specter is useful for navigating through nested data structures, and then return
 - [A Review of Recursion](#a-review-of-recursion)
 - [Using Specter Recursively](#using-specter-recursively)
 - [Applications](#applications)
+	- [Navigate to all values in a tree](#navigate-to-all-values-in-a-tree)
+	- [Navigate to all of the instances of one key in a map](#navigate-to-all-of-the-instances-of-one-key-in-a-map)
+	- [Find the "index route" of a value within a data structure](#find-the-index-route-of-a-value-within-a-data-structure)
 
 <!-- markdown-toc end -->
 
@@ -55,3 +58,71 @@ You can see that there are three arguments, which match onto our list above. (Th
 Rather than providing a recursive function, `recursive-path` provides a recursive path that can be composed with other navigators. Accordingly, it is often useful - but not necessary - to define a recursive-path using `def`, so that it can be called in multiple places, not just the place where you initially need it.
 
 # Applications
+
+Here are some examples of using Specter recursively with `recursive-path`.
+
+## Navigate to all values in a tree
+
+```clojure
+=> (def tree-walker (recursive-path [] p (if-path vector? [ALL p] STAY)))
+#'playground.specter/tree-walker
+;; Get all of the values nested within vectors
+=> (select tree-walker [1 [2 [3 4] 5] [[6]]])
+[1 2 3 4 5 6]
+;; Transform all of the values within vectors
+=> (transform tree-walker inc [1 [2 [3 4] 5] [[6]]])
+[2 [3 [4 5] 6] [[7]]]
+;; Increment even leaves
+=> (transform [tree-walker even?] inc [1 [2 [3 4] 5] [[6]]])
+[1 [3 [3 5] 5] [[7]]]
+;; Get odd leaves
+=> (select [tree-walker odd?] [1 [2 [3 4] 5] [[6]]])
+;; => [1 3 5]
+;; Reverse order of even leaves (order based on depth-first search)
+=> (transform (subselect tree-walker even?) reverse [1 [2 [3 4] 5] [[6]]])
+[1 [6 [3 4] 5] [[2]]]
+```
+
+## Navigate to all of the instances of one key in a map
+
+```clojure
+=> (def map-key-walker (recursive-path [akey] p [ALL (if-path [FIRST #(= % akey)] LAST [LAST p])]))
+#'playground.specter/map-key-walker
+;; Get all the vals for key :aaa, regardless of where they are in the structure
+=> (select (map-key-walker :aaa) {:a {:aaa 3 :b {:c {:aaa 2} :aaa 1}}})
+[3 2 1]
+;; Transform all the vals for key :aaa, regardless of where they are in the structure
+=> (transform (map-key-walker :aaa) inc {:a {:aaa 3 :b {:c {:aaa 2} :aaa 1}}})
+{:a {:aaa 4, :b {:c {:aaa 3}, :aaa 2}}}
+```
+
+## Find the "index route" of a value within a data structure
+
+This example comes from [a Stack Overflow question](https://stackoverflow.com/questions/45764946/how-to-find-indexes-in-deeply-nested-data-structurevectors-and-lists-in-clojur).
+
+```clojure
+=> (defn find-index-route [v data]
+	(let [walker (recursive-path [] p
+								 (if-path sequential?
+										  [INDEXED-VALS
+										   (if-path [LAST (pred= v)]
+													FIRST
+													[(collect-one FIRST) LAST p])]))
+		  ret    (select-first walker data)]
+	  (if (or (vector? ret) (nil? ret)) ret [ret])))
+#'playground.specter/find-index-route
+=> (find-index-route :my-key '(1 2 :my-key))
+[2]
+=> (find-index-route :my-key '(1 2 "a" :my-key "b"))
+[3]
+=> (find-index-route :my-key '(1 2 [:my-key] "c"))
+[2 0]
+=> (find-index-route :my-key '(1 2 [3 [:my-key]]))
+[2 1 0]
+=> (find-index-route :my-key '(1 2 [3 [[] :my-key]]))
+[2 1 1]
+=> (find-index-route :my-key '(1 2 [3 [4 5 6 (:my-key)]]))
+[2 1 3 0]
+=> (find-index-route :my-key '(1 2 [3 [[]]]))
+nil
+```
