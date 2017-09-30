@@ -11,13 +11,17 @@ Specter is useful for navigating through nested data structures, and then return
 
 # A Review of Recursion
 
+Before we review how recursion works with Specter, it might be worth a brief refresher on recursion more broadly. If you're familiar with this material, feel free to skip this section. But a brief review will allow us to separate reviewing the concept of recursion from learning how to combine that concept with Specter's functionality.
+
 Most simple functions do not call themselves. For example:
 
 ```clojure
 (defn square [x] (* x x))
 ```
 
-Instead of calling `square`, itself, `square` calls another function, `*` or multiply. This, of course, serves the purpose of squaring the input. You don't always need recursion. But sometimes you need a function to call itself - to recur. To take another example from mathematics, you need recursion to implement factorials. Factorials are equal to the product of every positive number equal to or less than the number. For example, the factorial of 5 ("5!") is `5 * 4 * 3 * 2 * 1 = 120`.
+Instead of calling `square`, itself, `square` calls another function, `*` or multiply. This, of course, serves the purpose of squaring the input. You don't always need recursion.
+
+But sometimes you need a function to call itself - to recur. To take another example from mathematics, you need recursion to implement factorials. Factorials are equal to the product of every positive number equal to or less than the number. For example, the factorial of 5 ("5!") is `5 * 4 * 3 * 2 * 1 = 120`.
 
 Here is a simple implementation of factorials in Clojure:
 
