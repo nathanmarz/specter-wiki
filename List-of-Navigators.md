@@ -1,4 +1,7 @@
+It is a convention in Specter that unparameterized navigators are capitalized, whereas parameterized navigators and macros are lowercase. When writing your own navigators, you can follow this convention for consistency and readability.
+
 **Note:** Many of the descriptions and a couple of the examples are lightly edited from those found on the [Codox documentation](http://nathanmarz.github.io/specter/com.rpl.specter.html).
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
