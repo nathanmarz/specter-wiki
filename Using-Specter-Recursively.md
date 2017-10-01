@@ -62,22 +62,22 @@ Here are some examples of using Specter recursively with `recursive-path`.
 ## Navigate to all values in a tree
 
 ```clojure
-=> (def tree-walker (recursive-path [] p (if-path vector? [ALL p] STAY)))
-#'playground.specter/tree-walker
+=> (def TREE-VALUES (recursive-path [] p (if-path vector? [ALL p] STAY)))
+#'playground.specter/TREE-VALUES
 ;; Get all of the values nested within vectors
-=> (select tree-walker [1 [2 [3 4] 5] [[6]]])
+=> (select TREE-VALUES [1 [2 [3 4] 5] [[6]]])
 [1 2 3 4 5 6]
 ;; Transform all of the values within vectors
-=> (transform tree-walker inc [1 [2 [3 4] 5] [[6]]])
+=> (transform TREE-VALUES inc [1 [2 [3 4] 5] [[6]]])
 [2 [3 [4 5] 6] [[7]]]
 ;; Increment even leaves
-=> (transform [tree-walker even?] inc [1 [2 [3 4] 5] [[6]]])
+=> (transform [TREE-VALUES even?] inc [1 [2 [3 4] 5] [[6]]])
 [1 [3 [3 5] 5] [[7]]]
 ;; Get odd leaves
-=> (select [tree-walker odd?] [1 [2 [3 4] 5] [[6]]])
+=> (select [TREE-VALUES odd?] [1 [2 [3 4] 5] [[6]]])
 ;; => [1 3 5]
 ;; Reverse order of even leaves (order based on depth-first search)
-=> (transform (subselect tree-walker even?) reverse [1 [2 [3 4] 5] [[6]]])
+=> (transform (subselect TREE-VALUES even?) reverse [1 [2 [3 4] 5] [[6]]])
 [1 [6 [3 4] 5] [[2]]]
 ```
 
