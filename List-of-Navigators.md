@@ -955,7 +955,6 @@ See also [not-selected?](#not-selected?).
 ;; Path returns [0 2], so selected? returns the entire structure
 => (select-one (selected? [ALL (must :a) even?]) [{:a 0} {:a 1} {:a 2} {:a 3}])
 [{:a 0} {:a 1} {:a 2} {:a 3}]
-nil
 ```
 
 ## set-elem
