@@ -53,8 +53,6 @@ The main way that Specter enables recursion is through the parameterized macro, 
 
 You can see that there are three arguments, which match onto our list above. (They are, however, in a different order.) The `self-sym` is the name; the `params` are the optional input arguments; and the `path` is the body of the recursion. This path can be recursive, referencing itself by the `self-sym`.
 
-(NOTE: QUESTION: Is there a reason why the self-sym is the second argument?)
-
 Rather than providing a recursive function, `recursive-path` provides a recursive path that can be composed with other navigators. Accordingly, it is often useful - but not necessary - to define a recursive-path using `def`, so that it can be called in multiple places, not just the place where you initially need it.
 
 # Applications
