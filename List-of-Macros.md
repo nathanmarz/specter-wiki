@@ -25,6 +25,7 @@
 - [Collector Macros](#collector-macros)
     - [defcollector](#defcollector)
 - [Navigator Macros](#navigator-macros)
+    - [defdynamicnav](#defdynamicnav)
     - [defnav](#defnav)
     - [nav](#nav)
 
@@ -456,6 +457,12 @@ An informative example is the actual implementation of `putval`, which follows.
 ```
 
 # Navigator Macros
+
+## defdynamicnav
+
+`(defdynamicnav name & args)`
+
+Defines a function that can choose what navigator to use at runtime based on the dynamic context. The arguments will either be static values or objects satisfying `dynamic-param?`. Use `late-bound-nav` to produce a runtime navigator that uses the values of the dynamic params. See `selected?` for an illustrative example of dynamic navs. Also see [Specter's inline caching implementation](https://github.com/nathanmarz/specter/wiki/Specter%27s-inline-caching-implementation).
 
 ## defnav
 
