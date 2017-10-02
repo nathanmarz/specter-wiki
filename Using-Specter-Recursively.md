@@ -3,16 +3,20 @@ Specter is useful for navigating through nested data structures, and then return
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [A Review of Recursion](#a-review-of-recursion)
+- [A Review of Basic Recursion](#a-review-of-basic-recursion)
 - [Using Specter Recursively](#using-specter-recursively)
 - [A Basic Example](#a-basic-example)
+- [Advanced Recursion with Specter](#advanced-recursion-with-specter)
+	- [The Building Blocks of Recursion in Specter](#the-building-blocks-of-recursion-in-specter)
+	- [The Implementation of `recursive-path`](#the-implementation-of-recursive-path)
+	- [Mutually Recursive Paths](#mutually-recursive-paths)
 - [Applications](#applications)
 	- [Navigate to all of the instances of one key in a map](#navigate-to-all-of-the-instances-of-one-key-in-a-map)
 	- [Find the "index route" of a value within a data structure](#find-the-index-route-of-a-value-within-a-data-structure)
 
 <!-- markdown-toc end -->
 
-# A Review of Recursion
+# A Review of Basic Recursion
 
 Before we review how recursion works with Specter, it might be worth a brief refresher on recursion more broadly. If you're familiar with this material, feel free to skip this section. But a brief review will allow us to separate reviewing the concept of recursion from learning how to combine that concept with Specter's functionality.
 
@@ -112,6 +116,82 @@ Or reverse the order of the even leaves (where the order is based on a depth-fir
 ```
 
 That you can define how to get to the values you care about once and easily reuse that logic for both querying and transformation is invaluable. And, as always, the performance is near-optimal for both querying and transformation.
+
+# Advanced Recursion with Specter
+
+More advanced recursion is possible with Specter. In particular, it is also possible to create mutually recursive paths with Specter - recursive paths that call each other within their bodies.
+
+To learn how to do so, let's look at Specter's implementation of `recursive-path`. As with much of Specter's functionality, `recursive-path` is implemented with a [macro](https://clojure.org/reference/macros). Accordingly, it uses the [reader symbols](https://clojure.org/guides/weird_characters) syntax quote (`) and unquote (~).
+
+## The Building Blocks of Recursion in Specter
+
+`recursive-path` is built with three basic elements: `local-declarepath`, `declarepath`, and `providepath`:
+
+```clojure
+(defmacro declarepath [name]
+  `(def ~name (i/local-declarepath)))
+
+(defmacro providepath [name apath]
+  `(i/providepath* ~name (path ~apath)))
+```
+
+`local-declarepath` comes from the `com.rpl.specter.impl` namespace (although you can also access it from the core Specter namespace). `local-declarepath` lets you declare a path anonymously which can be provided later. But it can also be used in the meantime in other path definitions. As we will see, this is how recursion and mutual recursion are enabled.
+
+`declarepath` simply assigns an anonymous path created by `local-declarepath` to a var with `def`. This works similarly to Clojure's built-in `declare` macro. `declare` calls `def` on "the supplied var names with no bindings"; this is "useful for making forward declarations." (However, unlike Clojure's `declare`, Specter's `declarepath` only works on one name.)
+
+`providepath` supplies the full path, declared by `declarepath`, rather than an empty, anonymous, and therefore useless path. Here is a simple, non-recursive example of `declarepath` and `providepath` being used in combination:
+
+```clojure
+=> (declarepath SECOND)
+=> (providepath SECOND [(srange 1 2) FIRST])
+=> (select-one SECOND (range 5))
+1
+=> (transform SECOND dec (range 5))
+(0 0 2 3 4)
+```
+
+## The Implementation of `recursive-path`
+
+Now we are ready to see the implementation of `recursive-path`. Here is the source code:
+
+```clojure
+(defmacro recursive-path [params self-sym path]
+  (if (empty? params)
+	`(let [~self-sym (i/local-declarepath)]
+	   (providepath ~self-sym ~path)
+	   ~self-sym)
+	`(i/direct-nav-obj
+	  (fn ~params
+		(let [~self-sym (i/local-declarepath)]
+		  (providepath ~self-sym ~path)
+		  ~self-sym)))))
+```
+
+`recursive-path` uses a let-binding to associate an anonymous path with the provided `self-sym` (just like `declare-path`, but not assigned to a var). Then the specified is provided to that anonymous path with `providepath`. Then the `self-sym` is returned. If there are parameters, all of that is wrapped in an anonymous, navigable function that can take the appropriate parameters. In any case, `recursive-path` returns the var associated with a path that calls itself.
+
+## Mutually Recursive Paths
+
+Now that you know how `recursive-path` is built, you can use that knowledge to implement your own recursive paths in Specter, without `recursive-path`. Here is an example of how you can use `declarepath` and `providepath` to implement recursive paths without `recursive-path`.
+
+```clojure
+=> (declarepath DEEP-MAP-VALS)
+=> (providepath DEEP-MAP-VALS (if-path map? [MAP-VALS DEEP-MAP-VALS] STAY))
+=> (select DEEP-MAP-VALS {:a {:b 2} :c {:d 3 :e {:f 4}} :g 5})
+[2 3 4 5]
+=> (transform DEEP-MAP-VALS inc {:a {:b 2} :c {:d 3 :e {:f 4}} :g 5})
+{:a {:b 3}, :c {:d 4, :e {:f 5}}, :g 6}
+```
+
+You can also use this pattern for creating mutually recursive paths. Here is an example of what that might look like:
+
+```clojure
+=> (declarepath A)
+=> (declarepath B)
+=> (providepath A B)
+=> (providepath B A)
+```
+
+This example, is, of course, useless (and non-terminating, and therefore harmful), but it shows how you would implement mutually recursive paths using Specter.
 
 # Applications
 
