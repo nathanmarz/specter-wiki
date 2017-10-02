@@ -5,8 +5,8 @@ Specter is useful for navigating through nested data structures, and then return
 
 - [A Review of Recursion](#a-review-of-recursion)
 - [Using Specter Recursively](#using-specter-recursively)
+- [A Basic Example](#a-basic-example)
 - [Applications](#applications)
-	- [Navigate to all values in a tree](#navigate-to-all-values-in-a-tree)
 	- [Navigate to all of the instances of one key in a map](#navigate-to-all-of-the-instances-of-one-key-in-a-map)
 	- [Find the "index route" of a value within a data structure](#find-the-index-route-of-a-value-within-a-data-structure)
 
@@ -55,31 +55,67 @@ You can see that there are three arguments, which match onto our list above. (Th
 
 Rather than providing a recursive function, `recursive-path` provides a recursive path that can be composed with other navigators. Accordingly, it is often useful - but not necessary - to define a recursive-path using `def`, so that it can be called in multiple places, not just the place where you initially need it.
 
-# Applications
+# A Basic Example
 
-Here are some examples of using Specter recursively with `recursive-path`.
-
-## Navigate to all values in a tree
+Suppose you had a tree represented using vectors:
 
 ```clojure
-=> (def TREE-VALUES (recursive-path [] p (if-path vector? [ALL p] STAY)))
-#'playground.specter/TREE-VALUES
-;; Get all of the values nested within vectors
+=> (def tree [1 [2 [[3]] 4] [[5] 6] [7] 8 [[9]]])
+#'playground.specter/tree
+```
+
+You can define a navigator to all the leaves of the tree like this:
+
+```clojure
+=> (def TREE-VALUES
+	(recursive-path [] p
+	  (if-path vector?
+		[ALL p]
+		STAY)))
+```
+
+`recursive-path` allows your path definition to refer to itself, in this case using `p`. This path definition leverages the `if-path` navigator which uses the predicate to determine which path to continue on. If currently navigated to a vector, it recurses navigation at all elements of the vector. Otherwise, it uses `STAY` to stop traversing and finish navigation at the current point. The effect of all this is a depth-first traversal to each leaf node.
+
+Now we can get all of the values nested within vectors:
+
+```clojure
 => (select TREE-VALUES [1 [2 [3 4] 5] [[6]]])
 [1 2 3 4 5 6]
-;; Transform all of the values within vectors
+```
+
+Or transform all of those values:
+
+```clojure
 => (transform TREE-VALUES inc [1 [2 [3 4] 5] [[6]]])
 [2 [3 [4 5] 6] [[7]]]
-;; Increment even leaves
-=> (transform [TREE-VALUES even?] inc [1 [2 [3 4] 5] [[6]]])
-[1 [3 [3 5] 5] [[7]]]
-;; Get odd leaves
-=> (select [TREE-VALUES odd?] [1 [2 [3 4] 5] [[6]]])
-;; => [1 3 5]
-;; Reverse order of even leaves (order based on depth-first search)
-=> (transform (subselect TREE-VALUES even?) reverse [1 [2 [3 4] 5] [[6]]])
-[1 [6 [3 4] 5] [[2]]]
 ```
+
+You can also compose `TREE-VALUES` with other navigators to do all sorts of manipulations. For example, you can increment even leaves:
+
+```clojure
+=> (transform [TREE-VALUES even?] inc tree)
+[1 [3 [[3]] 5] [[5] 7] [7] 9 [[9]]]
+```
+
+Or get the odd leaves:
+
+```clojure
+=> (select [TREE-VALUES odd?] tree)
+[1 3 5 7 9]
+```
+
+Or reverse the order of the even leaves (where the order is based on a depth-first search):
+
+```clojure
+=> (transform (subselect TREE-VALUES even?) reverse tree)
+[1 [8 [[3]] 6] [[5] 4] [7] 2 [[9]]]
+```
+
+That you can define how to get to the values you care about once and easily reuse that logic for both querying and transformation is invaluable. And, as always, the performance is near-optimal for both querying and transformation.
+
+# Applications
+
+Here are some other examples of using Specter recursively with `recursive-path`.
 
 ## Navigate to all of the instances of one key in a map
 
