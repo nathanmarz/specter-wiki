@@ -25,6 +25,7 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
     - [NIL->LIST](#nil-list)
     - [NIL->SET](#nil-set)
     - [NIL->VECTOR](#nil-vector)
+    - [NONE](#none)
     - [NONE-ELEM](#none-elem)
     - [STAY](#stay)
     - [STOP](#stop)
@@ -413,6 +414,22 @@ the structure has no metadata or may not contain metadata.
 []
 => (select-one NIL->VECTOR :foo)
 :foo
+```
+
+## NONE
+
+`NONE` is a global value used to indicate no elements selected during `[[select-any]]`.
+
+```clojure
+=> (select-any (before-index 0) [1 2 3])
+:com.rpl.specter.impl/NONE
+```
+
+`NONE` can also be used in transforms to remove elements:
+
+```clojure
+=> (setval ALL NONE [1 2 3])
+[]
 ```
 
 ## NONE-ELEM
