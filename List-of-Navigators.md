@@ -68,6 +68,7 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
     - [terminal](#terminal)
     - [terminal-val](#terminal-val)
     - [transformed](#transformed)
+    - [traversed](#traversed)
     - [view](#view)
     - [walker](#walker)
 
