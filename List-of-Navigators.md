@@ -8,6 +8,7 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
 - [Unparameterized Navigators](#unparameterized-navigators)
     - [AFTER-ELEM](#after-elem)
     - [ALL](#all)
+    - [ALL-WITH-META](#all-with-meta)
     - [ATOM](#atom)
     - [BEFORE-ELEM](#before-elem)
     - [BEGINNING](#beginning)
@@ -83,8 +84,6 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
 
 <!-- markdown-toc end -->
 
-
-
 # Unparameterized Navigators
 
 ## AFTER-ELEM
@@ -116,6 +115,34 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
 ```clojure
 => (setval [ALL nil?] NONE [1 2 nil 3 nil])
 [1 2 3]
+```
+
+## ALL-WITH-META
+
+`ALL-WITH-META` is the same as `ALL`, except it maintains metadata on the structure in transforms. This navigator exists solely for transforms, especially for `codewalker`. There's no metadata to maintain on `select`, since it navigates into the subvalues.
+
+```clojure
+=> (select ALL ^{:purpose "Count"} [0 1 2 3])
+[0 1 2 3]
+=> (meta (select ALL ^{:purpose "Count"} [0 1 2 3]))
+nil
+=> (select ALL-WITH-META ^{:purpose "Count"} [0 1 2 3])
+[0 1 2 3]
+=> (meta (select ALL-WITH-META ^{:purpose "Count"} [0 1 2 3]))
+nil
+=> (transform ALL-WITH-META inc ^{:purpose "Count"} [0 1 2 3])
+[1 2 3 4]
+=> (meta (transform ALL-WITH-META inc ^{:purpose "Count"} [0 1 2 3]))
+{:purpose "Count"}
+```
+
+`ALL-WITH-META` can transform to `NONE` to remove elements.
+
+```clojure
+=> (setval [ALL-WITH-META nil?] NONE ^{:purpose "Count"} [1 2 nil 3 nil])
+[1 2 3]
+=> (meta (setval [ALL-WITH-META nil?] NONE ^{:purpose "Count"} [1 2 nil 3 nil]))
+^{:purpose "Count"}
 ```
 
 ## ATOM
