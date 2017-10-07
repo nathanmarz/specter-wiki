@@ -391,8 +391,8 @@ select/transform/setval/replace-in/etc. macros.
 Any higher order navigators passed to `path` must include their arguments, even if their arguments will be evaluated at runtime.
 
 ```clojure
-=> (def p (path even?))
-=> (select [ALL p] (range 10))
+=> (def MY-PATH (path even?))
+=> (select [ALL MY-PATH] (range 10))
 [0 2 4 6 8]
 ```
 
