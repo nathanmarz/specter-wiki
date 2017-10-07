@@ -217,12 +217,12 @@ This example comes from [a Stack Overflow question](https://stackoverflow.com/qu
 ```clojure
 => (defn find-index-route [v data]
 	(let [walker (recursive-path [] p
-								 (if-path sequential?
-										  [INDEXED-VALS
-										   (if-path [LAST (pred= v)]
-													FIRST
-													[(collect-one FIRST) LAST p])]))
-		  ret    (select-first walker data)]
+			(if-path sequential?
+			  [INDEXED-VALS
+			   (if-path [LAST (pred= v)]
+			     FIRST
+			     [(collect-one FIRST) LAST p])]))
+	      ret (select-first walker data)]
 	  (if (or (vector? ret) (nil? ret)) ret [ret])))
 #'playground.specter/find-index-route
 => (find-index-route :my-key '(1 2 :my-key))
