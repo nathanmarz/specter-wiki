@@ -210,6 +210,30 @@ Here are some other examples of using Specter recursively with `recursive-path`.
 {:a {:aaa 4, :b {:c {:aaa 3}, :aaa 2}}}
 ```
 
+## Recursively navigate to every map in a map of maps
+
+You have a deeply nested map of maps:
+
+```clojure
+(def data
+  {:a {:b {:c 1} :d 2}
+   :e {:f 3 :g 4}})
+```
+
+You want to recursively navigate this data structure and add a key-value pair to every map at every level. This example, `MAP-NODES`, shows you how to do so:
+
+```clojure
+=> (def MAP-NODES
+	 (recursive-path [] p
+	   (if-path map?
+		 (continue-then-stay MAP-VALS p))))
+
+=> (setval [MAP-NODES :X] 0 data)
+{:a {:b {:c 1, :X 0}, :d 2, :X 0}, :e {:f 3, :g 4, :X 0}, :X 0}
+```
+
+`MAP-NODES` illustrates how to combine recursive paths with `[continue-then-stay](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#continue-then-stay)`, which navigates to the provided path and then to the current element. This should also point to how you might use recursive paths with `[stay-then-continue](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stay-then-continue)`, which navigates to the current element and then to the provided path.
+
 ## Find the "index route" of a value within a data structure
 
 This example comes from [a Stack Overflow question](https://stackoverflow.com/questions/45764946/how-to-find-indexes-in-deeply-nested-data-structurevectors-and-lists-in-clojur).
@@ -220,9 +244,9 @@ This example comes from [a Stack Overflow question](https://stackoverflow.com/qu
 			(if-path sequential?
 			  [INDEXED-VALS
 			   (if-path [LAST (pred= v)]
-			     FIRST
-			     [(collect-one FIRST) LAST p])]))
-	      ret (select-first walker data)]
+				 FIRST
+				 [(collect-one FIRST) LAST p])]))
+		  ret (select-first walker data)]
 	  (if (or (vector? ret) (nil? ret)) ret [ret])))
 #'playground.specter/find-index-route
 => (find-index-route :my-key '(1 2 :my-key))
