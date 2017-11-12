@@ -82,6 +82,7 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
     - [traversed](#traversed)
     - [view](#view)
     - [walker](#walker)
+    - [with-fresh-collected](#with-fresh-collected)
 
 <!-- markdown-toc end -->
 
@@ -1259,3 +1260,12 @@ See also [codewalker](#codewalker)
            '(1 (2 (3 4) 5 (6 7)) (8 9)))
 (1 :double :double)
 ```
+
+## with-fresh-collected
+
+`(with-fresh-collected & path)`
+
+`with-fresh-collected` continues navigating on the given path with the
+collected vals reset to []. Once navigation leaves the scope of
+`with-fresh-collected`, the collected vals revert to what they were
+before.
