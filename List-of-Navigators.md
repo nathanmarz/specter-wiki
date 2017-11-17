@@ -1048,6 +1048,12 @@ However, you can also provide your own function, so long as it takes and returns
 "Mary: 3rd George: 2nd Arthur: 1st"
 ```
 
+Specter also implicitly converts regexes in paths to call regex-nav:
+```clojure
+=> (setval #"t" "z" "test")
+"zesz"
+```
+
 ## selected?
 
 `(selected? & path)`
