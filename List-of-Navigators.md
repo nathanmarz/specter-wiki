@@ -68,6 +68,7 @@ It is a convention in Specter that unparameterized navigators are capitalized, w
     - [pred>=](#pred>=)
     - [putval](#putval)
     - [not-selected?](#not-selected)
+    - [regex-nav](#regex-nav)
     - [selected?](#selected)
     - [set-elem](#set-elem)
     - [srange](#srange)
@@ -991,6 +992,66 @@ See also [selected?](#selected?).
 ;; Path returns [0 2], so navigation stops
 => (select-one (not-selected? [ALL (must :a) even?]) [{:a 0} {:a 1} {:a 2} {:a 3}])
 nil
+```
+
+## regex-nav
+
+`(regex-nav regex)`
+
+_Added in 1.0.5_
+
+When supplied with a regex, navigates to every match in a string, and supports replacement with a new substring.
+
+Here are some basic examples of selecting:
+```clojure
+=> (select (regex-nav #"t") "test")
+["t" "t"]
+=> (select [:a (regex-nav #"t")] {:a "test"})
+["t" "t"]
+```
+
+You can use more advanced features of regexes like capture groups:
+
+```clojure
+=> (select [(regex-nav #"(\S+):\ (\d+)") (nthpath 2)] "Mary: 1st George: 2nd Arthur: 3rd")
+["1" "2" "3"]
+```
+
+You can replace matches with a provided value:
+
+```clojure
+=> (setval (regex-nav #"t") "z" "test")
+"zesz"
+=> (setval [:a (regex-nav #"t")] "z" {:a "test"})
+{:a "zesz"}
+```
+
+Or you can `transform` with a function, such as the ones in the `clojure.string` namespace:
+
+```clojure
+=> (transform (regex-nav #"t") clojure.string/capitalize "test")
+"TesT"
+=> (transform [:a (regex-nav #"t")] clojure.string/capitalize {:a "test"})
+{:a "TesT"}
+=> (transform (regex-nav #"\s+\w") clojure.string/triml "Hello      World!")
+"HelloWorld!"
+```
+
+However, you can also provide your own function, so long as it takes and returns patterns, characters, or strings:
+
+```clojure
+=> (transform (regex-nav #"aa*") (fn [s] (-> s count str)) "aadt")
+"2dt"
+=> (transform (regex-nav #"[Aa]+") (fn [s] (apply str (take (count s) (repeat "@")))) "Amsterdam Aardvarks")
+"@msterd@m @@rdv@rks"
+=> (transform (subselect (regex-nav #"\d\w+")) reverse "Mary: 1st George: 2nd Arthur: 3rd")
+"Mary: 3rd George: 2nd Arthur: 1st"
+```
+
+Specter also implicitly converts regexes in paths to call regex-nav:
+```clojure
+=> (setval #"t" "z" "test")
+"zesz"
 ```
 
 ## selected?
