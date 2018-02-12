@@ -16,7 +16,7 @@ Refer to the specific API documentation to check usage.
 
 ## Operations
 
-There are 2 types of operations: queries and transforms.
+There are 2 types of operations: queries and transforms. Most of them have a compiled version that uses precompiled paths.
 
 #### Query
 
@@ -25,6 +25,10 @@ There are 2 types of operations: queries and transforms.
 #### Transform
 
 [`transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#transform), [`multi-transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#multi-transform), [`replace-in`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#replace-in), [`setval`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#setval)
+
+#### Compiled
+
+[`compiled-select`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-any`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-first`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-one`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-one!`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-selected-any?`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-setval`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-transform`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-traverse`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-traverse-all`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-)
 
 ## Paths
 
