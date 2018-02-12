@@ -8,21 +8,7 @@ There are 2 types of operations: queries and transforms.
 
 #### Query
 
-###### Multiple elements (return a vector of values found)
-
-`select`, `select-any`
-
-###### One element (return a single value)
-
-`select-first`, `select-one`, `select-one!`
-
-###### Query test
-
-`selected-any?`
-
-###### Transducer-related
-
-`traverse`, `traverse-all`
+`select`, `select-any`, `select-first`, `select-one`, `select-one!`, `selected-any?`, `traverse-all`
 
 #### Transform
 
@@ -34,32 +20,19 @@ A path (often named `apath`) is a navigator or a vector of navigators.
 
 Navigator sometimes operates on specific data structures.
 
-
 #### Maps
 
-`MAP-KEYS`, `MAP-VALS`, `keypath`, `map-key`, `submap`
+`MAP-KEYS`, `MAP-VALS`, `keypath`, `map-key`, `submap`, `must`
 
 #### Sequences
 
-###### All values
+`ALL`, `ALL-WITH-META`, `AFTER-ELEM`, `BEFORE-ELEM`, `BEGINNING`, `END`, `FIRST`, `INDEXED-VALS`, `LAST`
 
-`ALL`, `ALL-WITH-META`
-
-###### Specific position
-
-`AFTER-ELEM`, `BEFORE-ELEM`, `BEGINNING`, `END`, `FIRST`, `LAST`
-
-###### Indexed
-
-`INDEXED-VALS`, `before-index`, `index-nav`, `nthpath`, `srange`, `srange-dynamic`
-
-###### Others
-
-`continuous-subseqs`
+`before-index`, `continuous-subseqs`, `filterer`, `index-nav`, `nthpath`, `srange`, `srange-dynamic`
 
 #### Sets
 
-`NONE-ELEM`, `set-elem`
+`NONE-ELEM`, `set-elem`, `subsets`
 
 #### Keywords/Symbols
 
@@ -67,39 +40,39 @@ Navigator sometimes operates on specific data structures.
 
 #### Atoms
 
+`ATOM`
+
 #### Strings
 
-###### Specific position
-
-`BEGINNING`, `FIRST`, `END`, `LAST`
-
-##### Other
-
-`regex-nav`, `srange`
+`BEGINNING`, `FIRST`, `END`, `LAST`, `regex-nav`, `srange`
 
 #### Metadata
 
-`ALL-WITH-META`, `META`
+`ALL-WITH-META`, `META` 
 
 #### Views
 
-`NIL->LIST`, `NIL->SET`, `NIL->VECTOR`, `filterer`, `nil->val`, `subselect`, `transform`, `traversed`, `view`
+`NIL->LIST`, `NIL->SET`, `NIL->VECTOR`, `nil->val`, `parser`, `subselect`, `transformed`, `traversed`, `view`
 
 #### Value collection
 
-`VAL`, `collect`, `collect-one`, `collected?`, `putval`, `with-fresh-collected`
+`DISPENSE`, `VAL`, `collect`, `collect-one`, `collected?`, `putval`, `with-fresh-collected`
 
 #### Don't know yet
 
-`NONE`, `codewalker`, `each-nav`, `multi-path`, `must`, `parser`, `walker`
+`traverse`
 
 #### Control
 
-`STAY`, `STOP`, `comp-path`, `cond-path`, `continue-then-stay`, `if-path`, `stay-the-continue`
+`STAY`, `STOP`, `comp-path`, `cond-path`, `continue-then-stay`, `if-path`, `multi-path`, `stay-the-continue`
 
 #### Filters
 
 `pred`, `pred=`, `pred<`, `pred>`, `pred<=`, `pred>=`, `not-selected?`,  `selected?`
+
+#### Walking
+
+`codewalker`, `walker`
 
 #### Multi-transform
 
@@ -117,4 +90,4 @@ Navigator sometimes operates on specific data structures.
 
 #### Custom navigators
 
-`defdynamicnav`, `defnav`, `nav`
+`defdynamicnav`, `defnav`, `each-nav`, `nav`
