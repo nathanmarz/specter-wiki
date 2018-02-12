@@ -16,7 +16,7 @@ Refer to the specific API documentation to check usage.
 
 ## Operations
 
-There are 2 types of operations: queries and transforms. Most of them have a compiled version that uses precompiled paths.
+There are 2 types of operations: queries and transforms.
 
 #### Query
 
@@ -24,11 +24,7 @@ There are 2 types of operations: queries and transforms. Most of them have a com
 
 #### Transform
 
-[`transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#transform), [`multi-transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#multi-transform), [`replace-in`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#replace-in), [`setval`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#setval)
-
-#### Compiled
-
-[`compiled-select`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-any`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-first`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-one`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-select-one!`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-selected-any?`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-setval`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-transform`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-traverse`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-), [`compiled-traverse-all`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#compiled-)
+[`transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#transform), [`multi-transform`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#multi-transform), [`replace-in`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#replace-in), [`setval`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#setval), `vtransform`
 
 ## Paths
 
@@ -38,17 +34,17 @@ Navigator sometimes operates on specific data structures.
 
 #### Maps
 
-[`MAP-KEYS`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-keys), [`MAP-VALS`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-vals), [`keypath`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#keypath), [`map-key`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-key), [`submap`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#submap), [`must`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#must)
+[`MAP-KEYS`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-keys), [`MAP-VALS`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-vals), `compact`, [`keypath`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#keypath), [`map-key`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#map-key), [`submap`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#submap), [`must`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#must)
 
 #### Sequences
 
 [`ALL`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#all), [`ALL-WITH-META`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#all-with-meta), [`AFTER-ELEM`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#after-elem), [`BEFORE-ELEM`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#before-elem), [`BEGINNING`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#beginning), [`END`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#end), [`FIRST`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#first), [`INDEXED-VALS`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#indexed-vals), [`LAST`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#last)
 
-[`before-index`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#before-index), [`continuous-subseqs`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#continuous-subseqs), [`filterer`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#filterer), [`index-nav`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#index-nav), [`nthpath`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nthpath), [`srange`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#srange), [`srange-dynamic`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#srange-dynamic)
+[`before-index`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#before-index), `compact`, [`continuous-subseqs`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#continuous-subseqs), [`filterer`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#filterer), [`index-nav`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#index-nav), [`nthpath`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nthpath), [`srange`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#srange), [`srange-dynamic`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#srange-dynamic)
 
 #### Sets
 
-[`NONE-ELEM`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#none-elem), [`set-elem`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#set-elem), [`subset`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#subset)
+[`NONE-ELEM`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#none-elem), `compact`, [`set-elem`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#set-elem), [`subset`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#subset)
 
 #### Keywords/Symbols
 
@@ -68,7 +64,7 @@ Navigator sometimes operates on specific data structures.
 
 #### Views
 
-[`NIL->LIST`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-list), [`NIL->SET`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-set), [`NIL->VECTOR`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-vector), [`nil->val`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-val), [`parser`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#parser), [`subselect`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#subselect), [`transformed`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#transformed), [`traversed`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#traversed), [`view`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#view)
+[`NIL->LIST`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-list), [`NIL->SET`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-set), [`NIL->VECTOR`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-vector), [`nil->val`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#nil-val), [`parser`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#parser), [`transformed`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#transformed), [`traversed`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#traversed), [`view`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#view)
 
 #### Value collection
 
@@ -76,7 +72,7 @@ Navigator sometimes operates on specific data structures.
 
 #### Control
 
-[`STAY`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stay), [`STOP`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stop), [`comp-paths`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#comp-paths), [`cond-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#cond-path), [`continue-then-stay`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#continue-then-stay), [`if-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#if-path), [`multi-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#multi-path), [`stay-then-continue`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stay-then-continue)
+[`STAY`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stay), [`STOP`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stop), [`cond-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#cond-path), [`continue-then-stay`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#continue-then-stay), [`if-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#if-path), [`multi-path`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#multi-path), [`stay-then-continue`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#stay-then-continue), [`subselect`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#subselect)
 
 #### Filters
 
@@ -88,18 +84,8 @@ Navigator sometimes operates on specific data structures.
 
 #### Multi-transform
 
-[`terminal`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#terminal), [`terminal-val`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#terminal-val)
+[`terminal`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#terminal), [`terminal-val`](https://github.com/nathanmarz/specter/wiki/List-of-Navigators#terminal-val), `vterminal`
 
-## Extending Specter
+## Custom navigators
 
-#### Custom paths
-
-[`declarepath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#declarepath), [`defprotocolpath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defprotocolpath), [`extend-protocolpath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#extend-protocolpath), [`path`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#path), [`providepath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#providepath), [`recursive-path`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#recursive-path)
-
-#### Custom collectors
-
-[`defcollector`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defcollector)
-
-#### Custom navigators
-
-[`defdynamicnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defdynamicnav), [`defnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defnav), [`eachnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#eachnav), [`nav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#nav)
+[`declarepath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#declarepath), [`defprotocolpath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defprotocolpath), [`extend-protocolpath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#extend-protocolpath), [`path`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#path), [`providepath`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#providepath), [`recursive-path`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#recursive-path), [`defcollector`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defcollector), [`defdynamicnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defdynamicnav), [`defnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#defnav), [`eachnav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#eachnav), [`nav`](https://github.com/nathanmarz/specter/wiki/List-of-Macros#nav)
