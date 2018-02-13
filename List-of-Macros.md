@@ -10,7 +10,7 @@
     - [selected-any?](#selected-any)
     - [select-first](#select-first)
     - [select-one](#select-one)
-    - [select-one!](#select-one)
+    - [select-one!](#select-one-1)
     - [setval](#setval)
     - [transform](#transform)
     - [traverse](#traverse)
